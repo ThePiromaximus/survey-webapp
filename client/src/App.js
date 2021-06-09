@@ -2,7 +2,7 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NavigationBar from './NavigationBar';
 import SurveysList from './SurveyPreview.js';
-import { Container, Col, Row } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 
 function App() {
   return (
