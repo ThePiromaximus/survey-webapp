@@ -29,8 +29,8 @@
 ## Main React Components
 
 - `NavigationBar` (in `NavigationBar.js`): questo componente rappresenta la barra di navigazione principale della Web Application. Nella parte sinistra del componente si trova il "logo" della WebApp e sulla destra un bottone di login/logout che cambia in funzione del fatto che sia stato eseguito o meno un login da un admin.
-- `SurveysList` (in `LeftBar.js`): barra laterale sulla sinistra. Visualizzandola come "user" vi troveremo la lista di questionari caricati fino ad ora, cliccandovi potremo aprirli e compilarli. Visualizzandola come "admin" vi troveremo la lista di questionari da noi creati più un tasto per la creazione di un nuovo questionario; cliccando sui questionari da noi fatti potremo analizzarne le statistiche.
-- `SurveyPreview` (in `LeftBar.js`): card cliccabile, visualizzabile dentro la SurveysList, che contiene nome e autore di un questionario.
+- `SurveysList` (in `SurveysList.js`): componente che contiene tutti i questionari creati. Visualizzandola come "user" vi troveremo la lista di questionari caricati fino ad ora, cliccandovi potremo aprirli e compilarli. Visualizzandola come "admin" vi troveremo la lista di questionari da noi creati più un tasto per la creazione di un nuovo questionario; cliccando sui questionari da noi fatti potremo analizzarne le statistiche.
+- `SurveyPreview` (in `SurveyPreview.js`): card cliccabile, visualizzabile dentro la SurveysList, che contiene nome e autore di un questionario.
 
 (only _main_ components, minor ones may be skipped)
 
