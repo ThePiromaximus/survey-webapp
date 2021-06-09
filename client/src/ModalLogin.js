@@ -1,4 +1,3 @@
-import { Formik } from "formik";
 import { Modal, Button, Col, Row, Form, Alert } from "react-bootstrap";
 import { useState } from "react";
 
@@ -9,10 +8,11 @@ function ModalLogin(props) {
 
     const handleLogin = (event) => {
         event.preventDefault();
-        if (username === '') {
+        let re = "^\\s+$";
+        if (username === '' || username.match(re) ) {
             setError("Username field is empty");
         }
-        else if (password === '') {
+        else if (password === '' || password.match(re)) {
             setError("Password field is empty");
         }
         else {
@@ -39,13 +39,11 @@ function ModalLogin(props) {
                 <Modal.Body className="text-center">
                     <Row className="justify-content-center">
                         <Col lg={6} md={6} sm={8}>
-                            <Formik initialValues={{
-
-                            }}>
+                            
                                 <Form onSubmit={(values) => handleLogin(values)}>
                                     <Form.Group>
                                         {
-                                            error!="" ? 
+                                            error!=="" ? 
                                             (<Row className="justify-content-center">
                                                 <Alert variant="danger">
                                                     {error}
@@ -85,7 +83,7 @@ function ModalLogin(props) {
                                         Close
                                     </Button>
                                 </Form>
-                            </Formik>
+                            
                         </Col>
                     </Row>
                 </Modal.Body>
