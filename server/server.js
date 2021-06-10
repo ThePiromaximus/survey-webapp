@@ -1,5 +1,4 @@
 'use strict';
-
 const express = require('express');
 const passport = require('passport');
 const session = require('express-session');
@@ -8,11 +7,10 @@ const LocalStrategy = require('passport-local').Strategy;
 const morgan = require('morgan'); // logging middleware
 const DAO = require("./dao");
 
-// init express
 const app = new express();
+const port = 3001;
 app.use(morgan('dev'));
 app.use(express.json());
-const port = 3001;
 
 /*
   ***********************************************************
@@ -22,18 +20,24 @@ const port = 3001;
   of admins on the web app
 */
 
+//Initialization of Passport to use sessions
+app.use(passport.initialize());
+app.use(passport.session());
+
 //This function is used to find the user with the given credentials
 //It returns done(), that could be the authenticated user (OK) or 'false' and a message (NOT OK)
-passport.use(new LocalStrategy(
+passport.use(new LocalStrategy({
+  usernameField: 'username',
+  passwordField: 'password',
+},
   function (username, password, done) {
     DAO.getAdmin(username, password).then((admin) => {
       //If the credentials are wrong
       if (!admin) {
         return done(null, false, { message: 'Wrong credentials. Admin not found.' });
       }
-
       //Admin found
-      return done(null, admin);
+      return done(null, admin );
     });
   }));
 
@@ -45,10 +49,6 @@ app.use(session({
   resave: false,
   saveUninitialized: false
 }));
-
-//Initialization of Passport to use sessions
-app.use(passport.initialize());
-app.use(passport.session());
 
 //After the creation of sessions I can put the admin's id in it
 //I should put the username also but it's always better to store meaningless information in the session
@@ -70,12 +70,23 @@ passport.deserializeUser((id, done) => {
 
 //This route is used to receive login requests 
 app.post('/api/login', [
-  check('username').isString(),
-  check('password').isString()],
-  passport.authenticate('local'), (req, res) => {
-      res.json(req.admin);
-  });
+  check('username').isEmail(),
+  check('password').isString()
+  ], function (req, res, next) {
+    passport.authenticate("local", (err, admin, info) => {
+      if (err) return next(err);
 
+      if (!admin) {
+        // display wrong login messages
+        return res.status(401).json(info);
+      }
+      // success, perform the login
+      req.login(admin, (err) => {
+        if (err) return next(err);
+        return res.json(admin);
+      });
+    })(req, res, next);
+  });
 /*
   ***********************************************************
   ************ END OF AUTHENTICATION FUNCTIONS **************
@@ -84,13 +95,21 @@ app.post('/api/login', [
 
 //This function is used to check if a request comes from an authenticated admin
 const isLoggedIn = (req, res, next) => {
-  if(req.isAuthenticated())
+  if (req.isAuthenticated())
     return next();
-  
-  return res.status(401).json({ error: 'not authenticated'});
+
+  return res.status(401).json({ error: 'not authenticated' });
 }
+
+// logout
+app.delete('/api/logout' ,(req, res) => {
+  req.logout();
+  res.end();
+});
 
 //The server is listening...
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
+
+

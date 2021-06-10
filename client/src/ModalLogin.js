@@ -1,5 +1,6 @@
 import { Modal, Button, Col, Row, Form, Alert } from "react-bootstrap";
 import { useState } from "react";
+import API from "./API";
 
 function ModalLogin(props) {
     const [username, setUsername] = useState("");
@@ -16,9 +17,11 @@ function ModalLogin(props) {
             setError("Password field is empty");
         }
         else {
+            const credentials = {username, password};
+            login(credentials);
             setUsername("");
             setPassword("");
-            setError("")
+            setError("");
             props.setShowLogin(false);
         }
     };
@@ -27,6 +30,16 @@ function ModalLogin(props) {
         setUsername("");
         setPassword("");
         props.setShowLogin(false);
+    }
+
+    const login = async(credentials) => {
+        try {
+            const admin = await API.login(credentials);
+            props.setAdmin(admin);
+            alert('Welcome back, '+(admin.username));
+        }catch(err){
+            alert(err);
+        }
     }
 
 

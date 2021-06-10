@@ -22,7 +22,7 @@ exports.getAdmin = (username, password) => {
         }
         else {
           const admin = {id: row.id, username: row.username};
-          // check the hashes with an async call, given that the operation may be CPU-intensive (and we don't want to block the server)
+          //I compare the hash of the received password with the hash in the DB
          bcrypt.compare(password, row.password).then(result => {
             if(result)
             resolve(admin);
