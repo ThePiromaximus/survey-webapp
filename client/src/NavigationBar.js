@@ -17,7 +17,7 @@ function NavigationBar(props) {
             <Navbar bg="primary" variant="dark" className="justify-content-between">
                 <Navbar.Brand>
                     <h3>
-                        EssentialSurvey
+                        SuperSurvey
                     </h3>
                 </Navbar.Brand>
                 {props.admin.username ? (<Button variant="secondary" onClick={() => logout()}>

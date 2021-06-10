@@ -101,10 +101,20 @@ const isLoggedIn = (req, res, next) => {
   return res.status(401).json({ error: 'not authenticated' });
 }
 
-// logout
+//Logout
 app.delete('/api/logout' ,(req, res) => {
   req.logout();
   res.end();
+});
+
+//This function is used to listen for getAllSurveys() API
+app.get('/api/surveys', async(req, res) => {
+  await DAO.getAllSurveys().then(surveys => res.json(surveys)).catch(()=> res.status(500).json("Database unreachable"));
+});
+
+//This function is used to listen for getSurvey() API
+app.get('/api/survey=:survey', [check('survey').isInt({min:0})], async(req, res) => {
+  await DAO.getSurvey(req.params.survey).then( questions => res.json(questions)).catch(() => res.status(500).json("Database unreachable"));
 });
 
 //The server is listening...

@@ -33,6 +33,28 @@ async function logout() {
         });
 }
 
+//API to get ALL the surveys in the database (for all the users)
+async function getAllSurveys(){
+    try{
+        const res = await axios.get('/api/surveys');
+        const surveysList = res.data; 
+        return surveysList;
+    }catch(error){
+        alert("ERROR ON getAllSurveys() API");
+    }
+}
 
-const API = { login, logout }
+//API to get a specific survey and its questions given its IDs
+async function getSurvey(id){
+    const url = `/api/survey=${id}`;
+    try{
+        const res = await axios.get(url, {id: id});
+        const survey = await res.data;
+        return survey;
+    }catch(error){
+        alert("ERROR ON getSurvey() API");
+    }
+}
+
+const API = { login, logout, getAllSurveys, getSurvey }
 export default API;

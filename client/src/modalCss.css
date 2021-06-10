@@ -1,4 +1,4 @@
 .my-modal {
-    width: 90vw;
-    max-width: 90vw;
+    width: 50vw;
+    min-width: 50vw;
 } 

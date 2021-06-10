@@ -1,9 +1,11 @@
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import './modalCss.css';
+import API from "./API";
 
 function ModalSurvey(props) {
 
     const handleClose = () => props.setShow(false);
+
 
     if (props.show) {
         return (
@@ -17,7 +19,7 @@ function ModalSurvey(props) {
                     className="justify-content-center"
                 >
                     <Modal.Header className="justify-content-center">
-                        <Modal.Title >Survey</Modal.Title>
+                        <Modal.Title >{props.surveyTitle}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body className="text-center">
                         <Row className="justify-content-center">
