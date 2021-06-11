@@ -1,10 +1,89 @@
-import { Modal, Button, Form, Row, Col } from "react-bootstrap";
+import { Modal, Button, Form, Row, Col, Alert } from "react-bootstrap";
+import { useState } from "react";
 import './modalCss.css';
-import API from "./API";
 
 function ModalSurvey(props) {
 
-    const handleClose = () => props.setShow(false);
+    //name of the user who submits the survey
+    const [name, setName] = useState("");
+    const [error, setError] = useState("");
+    const [checkedBoxes, setCheckedBoxes] = useState(0);
+
+    const handleClose = () => {
+        setError("");
+        setName("");
+        props.setShow(false)
+    };
+
+    //This function handle the submit of a survey
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        let re = "^\\s+$";
+        if (name === '' || name.match(re)) {
+            setError("You have to insert your name before submit the survey!");
+        } else {
+            console.log(checkedBoxes);
+            alert(name + ", thanks for the submission!");
+            handleClose();
+        }
+
+    }
+    
+    //This function get all the options for a multiple questions
+    function renderMultiple(array) {
+        const multiple = array.map((option) => (
+            <Form.Check type="checkbox" label={option.optionText}></Form.Check>
+        ));
+        return (<Form.Group>
+            {multiple}
+        </Form.Group>);
+    }
+
+    /*
+    This function get all the questions of the specific survey and then it creates 
+    the form component to manage them
+    */
+    function renderQuestions() {
+        //questions = {max, min, optionId, optionText, questionId, questionText, type}
+        let alreadyDid = [];
+        let questionList = props.questions.map((question) => {
+            if (question.type === 1) {
+                //Question type = 1 -> Open question, mandatory answer
+                return (<>
+                    <hr />
+                    <Form.Label>
+                        <h6>
+                            {question.questionText}
+                        </h6>
+                    </Form.Label>
+                    <Form.Control required type="text" placeholder="Insert your answer here.." rows={3} />
+                    <Form.Text className="text-muted">
+                        (This question is mandatory)
+                    </Form.Text>
+                </>);
+            }
+            else if (question.type === 0 && !alreadyDid.includes(question.id)) {
+                alreadyDid.push(question.id);
+                let newarray = props.questions.map((e) => (e)).filter(e => e.questionId === question.questionId);
+                return (<>
+                    <hr />
+                    <Form.Label>
+                        <h6>
+                            {newarray[0].questionText}
+                        </h6>
+                    </Form.Label>
+                    {renderMultiple(newarray)}
+                    <Form.Text className="text-muted">
+                        (min answers: {question.min} - max answers: {question.max})
+                    </Form.Text>
+                </>
+                );
+            }
+
+        });
+
+        return questionList;
+    }
 
 
     if (props.show) {
@@ -23,25 +102,31 @@ function ModalSurvey(props) {
                     </Modal.Header>
                     <Modal.Body className="text-center">
                         <Row className="justify-content-center">
-                            <Col lg={6} md={6} sm={8}>
-                                <Form.Control size="sm" type="text" placeholder="Remember to insert your name before submit the survey" />
-                            </Col>
-                        </Row>
-                        <hr/>
-                        <Row>
-                            <Col>
-                                Lorem ipsum
+                            <Col >
+                                    <Form onSubmit={handleSubmit}>
+                                        <Form.Group>
+                                            <Form.Control size="sm" type="text" placeholder="Insert here your name" value={name} onChange={(event) => setName(event.target.value)} />
+                                            {renderQuestions()}
+                                        </Form.Group>
+                                        <hr />
+                                        <Button variant="secondary" onClick={handleClose}>
+                                            Close
+                                        </Button>
+                                        <Button variant="primary" type="onSubmit">
+                                            Submit
+                                        </Button>
+                                        {
+                                            error !== "" ?
+                                                (<Row className="justify-content-center mt-1">
+                                                    <Alert variant="danger">
+                                                        {error}
+                                                    </Alert>
+                                                </Row>) : <></>
+                                        }
+                                    </Form>
                             </Col>
                         </Row>
                     </Modal.Body>
-                    <Modal.Footer className="justify-content-center" >
-                        <Button variant="secondary" onClick={handleClose}>
-                            Close
-                        </Button>
-                        <Button variant="primary" onClick={handleClose}>
-                            Submit
-                        </Button>
-                    </Modal.Footer>
                 </Modal>
             </>
         );

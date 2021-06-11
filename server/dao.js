@@ -82,7 +82,7 @@ exports.getAllSurveys = () => {
 exports.getSurvey = (id) => {
   return new Promise((resolve, reject) => {
     const sql = `
-                  SELECT Q.id, Q.text, Q.type, Q.minAns, Q.maxAns, O.description
+                  SELECT Q.id, Q.text, Q.type, Q.minAns, Q.maxAns, O.description, O.id AS Oid
                   FROM QUESTION Q LEFT JOIN OPTION O ON O.questionId = Q.id
                   WHERE Q.surveyId = ?
                 `;
@@ -91,14 +91,14 @@ exports.getSurvey = (id) => {
         reject (err);
         return;
       }
-      console.log(rows)
       const survey = rows.map((question) => ({ 
-                                              id: question.id, 
-                                              text: question.text,
+                                              questionId: question.id, 
+                                              questionText: question.text,
                                               type: question.type,
                                               min: question.minAns,
                                               max: question.maxAns,
-                                              description: question.description 
+                                              optionId: question.Oid,
+                                              optionText: question.description 
                                             }));
       resolve(survey);
     })

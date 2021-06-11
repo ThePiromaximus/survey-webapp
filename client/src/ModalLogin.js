@@ -29,6 +29,7 @@ function ModalLogin(props) {
     const handleClose = () => {
         setUsername("");
         setPassword("");
+        setError("");
         props.setShowLogin(false);
     }
 
@@ -53,7 +54,7 @@ function ModalLogin(props) {
                     <Row className="justify-content-center">
                         <Col lg={6} md={6} sm={8}>
                             
-                                <Form onSubmit={(values) => handleLogin(values)}>
+                                <Form onSubmit={handleLogin}>
                                     <Form.Group>
                                         {
                                             error!=="" ? 

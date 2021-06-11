@@ -6,12 +6,13 @@ import API from "./API";
 function SurveyPreview(props) {
     const [show, setShow] = useState(false);
     const [surveyTitle, setSurveyTitle] = useState("");
+    const [questions, setQuestions] = useState([]);
 
     //I use this function to get the clicked survey through the APIs
     const handleOpenSurvey = async (surveyId, title) => {
         //The API.getSurvey get all the questions of the survey
         const surveyQuestions = await API.getSurvey(surveyId);
-        console.log(surveyQuestions); 
+        setQuestions(surveyQuestions);
         setSurveyTitle(title);
         setShow(true);
     }
@@ -37,7 +38,9 @@ function SurveyPreview(props) {
             <ModalSurvey 
                 show={show} 
                 setShow={setShow} 
-                surveyTitle={surveyTitle}>
+                surveyTitle={surveyTitle}
+                questions={questions}
+            >
             </ModalSurvey>
         </>
 
