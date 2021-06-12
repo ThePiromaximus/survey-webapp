@@ -1,13 +1,16 @@
 import { Modal, Button, Form, Row, Col, Alert } from "react-bootstrap";
 import { useState } from "react";
+import OpenQuestion from "./OpenQuestion";
 import './modalCss.css';
+import ClosedQuestion from "./ClosedQuestion";
 
 function ModalSurvey(props) {
 
     //name of the user who submits the survey
     const [name, setName] = useState("");
     const [error, setError] = useState("");
-    const [checkedBoxes, setCheckedBoxes] = useState(0);
+    const [wrongQuestion, setWrongQuestion] = useState(0);
+   
 
     const handleClose = () => {
         setError("");
@@ -21,23 +24,23 @@ function ModalSurvey(props) {
         let re = "^\\s+$";
         if (name === '' || name.match(re)) {
             setError("You have to insert your name before submit the survey!");
-        } else {
-            console.log(checkedBoxes);
+        } else if(wrongQuestion!==0){
+            let wq = '';
+            props.questions.forEach(element => {
+                if(element.questionId===wrongQuestion)
+                    	wq = element.questionText;
+            });
+            setError("It looks like you selected the wrong number of answers in the question: " + wq );
+        }
+        else {
             alert(name + ", thanks for the submission!");
             handleClose();
         }
 
     }
-    
-    //This function get all the options for a multiple questions
-    function renderMultiple(array) {
-        const multiple = array.map((option) => (
-            <Form.Check type="checkbox" label={option.optionText}></Form.Check>
-        ));
-        return (<Form.Group>
-            {multiple}
-        </Form.Group>);
-    }
+
+
+
 
     /*
     This function get all the questions of the specific survey and then it creates 
@@ -47,37 +50,19 @@ function ModalSurvey(props) {
         //questions = {max, min, optionId, optionText, questionId, questionText, type}
         let alreadyDid = [];
         let questionList = props.questions.map((question) => {
-            if (question.type === 1) {
+            if (question.type === 1 || question.type === 2) {
                 //Question type = 1 -> Open question, mandatory answer
-                return (<>
-                    <hr />
-                    <Form.Label>
-                        <h6>
-                            {question.questionText}
-                        </h6>
-                    </Form.Label>
-                    <Form.Control required type="text" placeholder="Insert your answer here.." rows={3} />
-                    <Form.Text className="text-muted">
-                        (This question is mandatory)
-                    </Form.Text>
-                </>);
+                //Question type = 2 -> Open question, not mandatory answer
+                return <OpenQuestion question={question}></OpenQuestion>;
             }
             else if (question.type === 0 && !alreadyDid.includes(question.id)) {
+                //Question type = 0 -> Multiple questions
                 alreadyDid.push(question.id);
                 let newarray = props.questions.map((e) => (e)).filter(e => e.questionId === question.questionId);
-                return (<>
-                    <hr />
-                    <Form.Label>
-                        <h6>
-                            {newarray[0].questionText}
-                        </h6>
-                    </Form.Label>
-                    {renderMultiple(newarray)}
-                    <Form.Text className="text-muted">
-                        (min answers: {question.min} - max answers: {question.max})
-                    </Form.Text>
-                </>
-                );
+                return (<ClosedQuestion options={newarray} question={question} setError={setError} setWrongQuestion={setWrongQuestion}>
+                </ClosedQuestion>);
+            }else{
+                return <></>;
             }
 
         });
@@ -103,27 +88,27 @@ function ModalSurvey(props) {
                     <Modal.Body className="text-center">
                         <Row className="justify-content-center">
                             <Col >
-                                    <Form onSubmit={handleSubmit}>
-                                        <Form.Group>
-                                            <Form.Control size="sm" type="text" placeholder="Insert here your name" value={name} onChange={(event) => setName(event.target.value)} />
-                                            {renderQuestions()}
-                                        </Form.Group>
-                                        <hr />
-                                        <Button variant="secondary" onClick={handleClose}>
-                                            Close
-                                        </Button>
-                                        <Button variant="primary" type="onSubmit">
-                                            Submit
-                                        </Button>
-                                        {
-                                            error !== "" ?
-                                                (<Row className="justify-content-center mt-1">
-                                                    <Alert variant="danger">
-                                                        {error}
-                                                    </Alert>
-                                                </Row>) : <></>
-                                        }
-                                    </Form>
+                                <Form onSubmit={handleSubmit}>
+                                    <Form.Group>
+                                        <Form.Control size="sm" type="text" placeholder="Insert here your name" value={name} onChange={(event) => setName(event.target.value)} />
+                                        {renderQuestions()}
+                                    </Form.Group>
+                                    <hr />
+                                    <Button variant="secondary" onClick={handleClose}>
+                                        Close
+                                    </Button>
+                                    <Button variant="primary" type="onSubmit">
+                                        Submit
+                                    </Button>
+                                    {
+                                        error !== "" ?
+                                            (<Row className="justify-content-center mt-1">
+                                                <Alert variant="danger">
+                                                    {error}
+                                                </Alert>
+                                            </Row>) : <></>
+                                    }
+                                </Form>
                             </Col>
                         </Row>
                     </Modal.Body>
