@@ -10,6 +10,8 @@ function ModalSurvey(props) {
     const [name, setName] = useState("");
     const [error, setError] = useState("");
     const [wrongQuestion, setWrongQuestion] = useState(0);
+    //answer = {answerText (if any), questionId, optionId (if any), userId}
+    const [answers, setAnswers] = useState([]); 
    
 
     const handleClose = () => {
@@ -34,8 +36,17 @@ function ModalSurvey(props) {
         }
         else {
             alert(name + ", thanks for the submission!");
+            console.log("Here your answers:")
+            console.log(answers);
+            /*
+                TODO:
+                1) Save the name of the user in the db and return the ID of the tuple created with db.run (PUSH api)
+                2) Add in every object of the array answers the id of the user inserted in the db
+                3) Save the answers in the db (PUSH api)
+            */
             handleClose();
         }
+        
 
     }
 
@@ -53,13 +64,16 @@ function ModalSurvey(props) {
             if (question.type === 1 || question.type === 2) {
                 //Question type = 1 -> Open question, mandatory answer
                 //Question type = 2 -> Open question, not mandatory answer
-                return <OpenQuestion question={question}></OpenQuestion>;
+                return <OpenQuestion question={question} setAnswers={setAnswers} answers={answers}></OpenQuestion>;
             }
             else if (question.type === 0 && !alreadyDid.includes(question.id)) {
                 //Question type = 0 -> Multiple questions
                 alreadyDid.push(question.id);
                 let newarray = props.questions.map((e) => (e)).filter(e => e.questionId === question.questionId);
-                return (<ClosedQuestion options={newarray} question={question} setError={setError} setWrongQuestion={setWrongQuestion}>
+                return (<ClosedQuestion options={newarray} question={question} 
+                                        setError={setError} setWrongQuestion={setWrongQuestion}
+                                        setAnswers={setAnswers} answers={answers}
+                        >
                 </ClosedQuestion>);
             }else{
                 return <></>;

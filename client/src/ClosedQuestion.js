@@ -8,11 +8,28 @@ function ClosedQuestion(props) {
     let max = props.question.max;
     const [checkedBoxes, setCheckedBoxes] = useState(0);
 
-    const handleClick = (event) => {  
-         
+    const handleClick = (event, optionId) => {  
+        //OptionId: id of the options clicked
+        //Passed as second parameter in onClick property of Form.Check
+        let tempAnswer = {
+            answerText: null,
+            questionId: props.question.questionId,
+            optionId: optionId,
+            userId: null
+        }
+        
         if(event.target.checked){
             setCheckedBoxes(checkedBoxes => checkedBoxes + 1);
+            props.setAnswers( () => {
+                let tempArray = props.answers.map((e) => (e)).filter((e) => (e.optionId!==optionId));
+                tempArray.push(tempAnswer);
+                return tempArray;
+            });
         }else{
+            props.setAnswers( () => {
+                let tempArray = props.answers.map((e) => (e)).filter((e) => (e.optionId!==optionId));
+                return tempArray;
+            });
             setCheckedBoxes(checkedBoxes => checkedBoxes - 1);
         }
 
@@ -27,7 +44,7 @@ function ClosedQuestion(props) {
             props.setWrongQuestion(0);
         }
         const multiple = array.map((option) => (
-            <Form.Check type="checkbox" label={option.optionText} onClick={(event) => handleClick(event)}></Form.Check>
+            <Form.Check type="checkbox" label={option.optionText} onClick={(event) => handleClick(event, option.optionId)}></Form.Check>
         ));
         return (<Form.Group>
             {multiple}
