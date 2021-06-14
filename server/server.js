@@ -138,7 +138,7 @@ app.post('/api/user', [check('name').isString({ min: 0 })], async (req, res) => 
 app.post('/api/survey',
   async (req, res) => {   
       //req.body contains the array of answers given by a certain user in a certain survey
-      await DAO.saveAnswers(req.body).then(() => res.status(200)).catch(() => res.status(500).json("Database unreachable"));
+      await DAO.saveAnswers(req.body).then(() => res.status(200).end()).catch(() => res.status(500).json("Database unreachable"));
 });
 
 //The server is listening...

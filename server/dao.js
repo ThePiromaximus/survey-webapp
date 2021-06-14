@@ -124,7 +124,7 @@ exports.createUser = (name) => {
 exports.saveAnswers = (answers) => {
   // answer = {answerText (if any), questionId, optionId (if any), userId}
   return new Promise((resolve, reject) => {
-    let error;
+    let error = "";
     for(let i = 0; i < answers.length; i++){
       let sql = 'INSERT INTO ANSWER (answerText, questionId, optionId, userId) VALUES(?, ?, ?, ?)';
       db.run(sql, [answers[i].answerText, answers[i].questionId, answers[i].optionId, answers[i].userId], function(err){
@@ -134,7 +134,8 @@ exports.saveAnswers = (answers) => {
       });
     }
 
-    if(!error){
+    if(error===""){
+      console.log("resolve");
       resolve(true);
     }
     else{
