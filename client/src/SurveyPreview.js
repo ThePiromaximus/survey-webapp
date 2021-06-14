@@ -17,34 +17,53 @@ function SurveyPreview(props) {
         setShow(true);
     }
 
-    return (
+    if(!props.admin)
+    {
+        return (
 
-        <>
-            <Card bg="light" className="m-2 p-1">
-                <Card.Body >
-                    <Row className="align-items-center justify-content-between">
-                        <Col><Card.Title className="m-0 text-left">{props.title}</Card.Title></Col>
-                        <Col>
-                            <Card.Text className="m-0 ">
-                                Made by: {props.author}
-                            </Card.Text>
-                        </Col>
-                        <Col className="text-right">
-                            <Button variant="primary" onClick={() => handleOpenSurvey(props.id, props.title)}>Fill out</Button>
-                        </Col>
-                    </Row>
-                </Card.Body>
-            </Card>
-            <ModalSurvey 
-                show={show} 
-                setShow={setShow} 
-                surveyTitle={surveyTitle}
-                questions={questions}
-            >
-            </ModalSurvey>
-        </>
-
-    );
+            <>
+                <Card bg="light" className="m-2 p-1">
+                    <Card.Body >
+                        <Row className="align-items-center justify-content-between">
+                            <Col><Card.Title className="m-0 text-left">{props.title}</Card.Title></Col>
+                            <Col>
+                                <Card.Text className="m-0 ">
+                                    Made by: {props.author}
+                                </Card.Text>
+                            </Col>
+                            <Col className="text-right">
+                                <Button variant="primary" onClick={() => handleOpenSurvey(props.id, props.title)}>Fill out</Button>
+                            </Col>
+                        </Row>
+                    </Card.Body>
+                </Card>
+                <ModalSurvey 
+                    show={show} 
+                    setShow={setShow} 
+                    surveyTitle={surveyTitle}
+                    questions={questions}
+                >
+                </ModalSurvey>
+            </>
+    
+        );
+    }else{
+        return (
+            <>
+                <Card className="m-2 p-1">
+                    <Card.Body >
+                        <Row className="align-items-center justify-content-between">
+                            <Col><Card.Title className="m-0 text-left">{props.title}</Card.Title></Col>
+                            <Col className="text-right">
+                                <Button variant="primary">See answers</Button>
+                            </Col>
+                        </Row>
+                    </Card.Body>
+                </Card>
+            </>
+        );
+    }
+    
 }
 
 export default SurveyPreview;

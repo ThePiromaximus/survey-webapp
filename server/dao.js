@@ -101,16 +101,16 @@ exports.getSurvey = (id) => {
         optionText: question.description
       }));
       resolve(survey);
-    })
+    });
 
-  })
+  });
 }
 
 //Create a new user and return its ID
 exports.createUser = (name) => {
   return new Promise((resolve, reject) => {
     const sql = 'INSERT INTO USER (name) VALUES(?)';
-    db.run(sql, [name], function (err) {
+    db.run(sql, [name], (err) => {
       if (err) {
         reject(err);
         return;
@@ -127,7 +127,7 @@ exports.saveAnswers = (answers) => {
     let error = "";
     for(let i = 0; i < answers.length; i++){
       let sql = 'INSERT INTO ANSWER (answerText, questionId, optionId, userId) VALUES(?, ?, ?, ?)';
-      db.run(sql, [answers[i].answerText, answers[i].questionId, answers[i].optionId, answers[i].userId], function(err){
+      db.run(sql, [answers[i].answerText, answers[i].questionId, answers[i].optionId, answers[i].userId],(err) => {
         if(err){
           error = err;
         }
@@ -135,13 +135,35 @@ exports.saveAnswers = (answers) => {
     }
 
     if(error===""){
-      console.log("resolve");
       resolve(true);
     }
     else{
       reject(error);
     }
     
+  });
+}
+
+//Get all the surveys of a certain admin
+exports.getAdminSurveys = (id) => {
+  return new Promise((resolve, reject) => {
+    console.log("DAO")
+    console.log(id);
+    const sql = ` SELECT id, title 
+                  FROM SURVEY 
+                  WHERE adminId = ?
+                `;
+    db.all(sql, [id], (err, rows) => {
+      if(err){
+        reject(err);
+        return;
+      }
+      const surveys = rows.map( (survey) => ({
+        id: survey.id,
+        title: survey.title
+      }));
+      resolve(surveys);
+    });
   });
 }
 

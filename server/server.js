@@ -136,9 +136,19 @@ app.post('/api/user', [check('name').isString({ min: 0 })], async (req, res) => 
 
 //This function is used to listen for saveAnswers() API
 app.post('/api/survey',
-  async (req, res) => {   
-      //req.body contains the array of answers given by a certain user in a certain survey
-      await DAO.saveAnswers(req.body).then(() => res.status(200).end()).catch(() => res.status(500).json("Database unreachable"));
+  async (req, res) => {
+    //req.body contains the array of answers given by a certain user in a certain survey
+    await DAO.saveAnswers(req.body).then(() => res.status(200).end()).catch(() => res.status(500).json("Database unreachable"));
+  });
+
+//This function is used to listen for getAdminSurveys() API
+app.get('/api/admin=:admin', [check('admin').isInt({ min: 0 })], async (req, res) => {
+  if (validationResult(req).isEmpty) {
+    await DAO.getAdminSurveys(req.params.admin).then(surveys => res.json(surveys)).catch(() => res.status(500).json("Database unreachable"));
+  } else {
+    //Status 422: Unprocessable Entity, the request was well-formed but was unable to be followed due to semantic errors.
+    return res.status(422).json({ errors: errors.array() })
+  }
 });
 
 //The server is listening...

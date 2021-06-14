@@ -93,5 +93,17 @@ async function saveAnswers(answers){
     }
 }
 
-const API = { login, logout, getAllSurveys, getSurvey, createUser, saveAnswers }
+//API to get all surveys of a certain admin given its ID
+async function getAdminSurveys(id){
+    const url = `/api/admin=${id}`;
+    try{
+        const res = await axios.get(url, {id: id});
+        const surveys = await res.data;
+        return surveys;
+    }catch(error){
+        alert("ERROR ON getAdminSurveys() API");
+    }
+}
+
+const API = { login, logout, getAllSurveys, getSurvey, createUser, saveAnswers, getAdminSurveys }
 export default API;
