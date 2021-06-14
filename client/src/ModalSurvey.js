@@ -1,7 +1,8 @@
 import { Modal, Button, Form, Row, Col, Alert } from "react-bootstrap";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import OpenQuestion from "./OpenQuestion";
 import './modalCss.css';
+import API from "./API";
 import ClosedQuestion from "./ClosedQuestion";
 
 function ModalSurvey(props) {
@@ -11,14 +12,23 @@ function ModalSurvey(props) {
     const [error, setError] = useState("");
     const [wrongQuestion, setWrongQuestion] = useState(0);
     //answer = {answerText (if any), questionId, optionId (if any), userId}
-    const [answers, setAnswers] = useState([]); 
-   
+    const [answers, setAnswers] = useState([]);
+
 
     const handleClose = () => {
         setError("");
         setName("");
+        setWrongQuestion(0);
+        setAnswers([]);
         props.setShow(false)
     };
+
+    useEffect(() => {
+        setError("");
+        setName("");
+        setWrongQuestion(0);
+        setAnswers([]);
+    }, [props.show]);
 
     //This function handle the submit of a survey
     const handleSubmit = (event) => {
@@ -26,32 +36,42 @@ function ModalSurvey(props) {
         let re = "^\\s+$";
         if (name === '' || name.match(re)) {
             setError("You have to insert your name before submit the survey!");
-        } else if(wrongQuestion!==0){
+        } else if (wrongQuestion !== 0) {
             let wq = '';
             props.questions.forEach(element => {
-                if(element.questionId===wrongQuestion)
-                    	wq = element.questionText;
+                if (element.questionId === wrongQuestion)
+                    wq = element.questionText;
             });
-            setError("It looks like you selected the wrong number of answers in the question: " + wq );
+            setError("It looks like you selected the wrong number of answers in the question: " + wq);
         }
         else {
+            //All is went well
             alert(name + ", thanks for the submission!");
-            console.log("Here your answers:")
-            console.log(answers);
-            /*
-                TODO:
-                1) Save the name of the user in the db and return the ID of the tuple created with db.run (PUSH api)
-                2) Add in every object of the array answers the id of the user inserted in the db
-                3) Save the answers in the db (PUSH api)
-            */
+            
+
+            sendAnswers();
             handleClose();
         }
-        
+
 
     }
 
+    const sendAnswers = async () => {
+        /*
+            TODO:
+            1) Save the name of the user in the db and return the ID of the tuple created with db.run (PUSH api)
+            2) Add in every object of the array answers the id of the user inserted in the db
+            3) Save the answers in the db (PUSH api)
+        */
+        const userId = await API.createUser(name);
+        await setAnswers(() => {
+            return answers.forEach(element => element.userId = userId);
+        });
+        
+        
+        await API.saveAnswers(answers);
 
-
+    };
 
     /*
     This function get all the questions of the specific survey and then it creates 
@@ -70,19 +90,19 @@ function ModalSurvey(props) {
                 //Question type = 0 -> Multiple questions
                 alreadyDid.push(question.id);
                 let newarray = props.questions.map((e) => (e)).filter(e => e.questionId === question.questionId);
-                return (<ClosedQuestion options={newarray} question={question} 
-                                        setError={setError} setWrongQuestion={setWrongQuestion}
-                                        setAnswers={setAnswers} answers={answers}
-                        >
+                return (<ClosedQuestion options={newarray} question={question}
+                    setError={setError} setWrongQuestion={setWrongQuestion}
+                    setAnswers={setAnswers} answers={answers}
+                >
                 </ClosedQuestion>);
-            }else{
+            } else {
                 return <></>;
             }
 
         });
 
         return questionList;
-    }
+    };
 
 
     if (props.show) {

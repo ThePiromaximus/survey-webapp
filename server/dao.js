@@ -61,11 +61,11 @@ exports.getAllSurveys = () => {
                   WHERE S.adminId = A.id
                  `;
     db.all(sql, [], (err, rows) => {
-      if(err){
-        reject (err);
+      if (err) {
+        reject(err);
         return;
       }
-      const allSurveys = rows.map( (row) => (
+      const allSurveys = rows.map((row) => (
         {
           id: row.id,
           title: row.title,
@@ -87,22 +87,60 @@ exports.getSurvey = (id) => {
                   WHERE Q.surveyId = ?
                 `;
     db.all(sql, [id], (err, rows) => {
-      if(err){
-        reject (err);
+      if (err) {
+        reject(err);
         return;
       }
-      const survey = rows.map((question) => ({ 
-                                              questionId: question.id, 
-                                              questionText: question.text,
-                                              type: question.type,
-                                              min: question.minAns,
-                                              max: question.maxAns,
-                                              optionId: question.Oid,
-                                              optionText: question.description 
-                                            }));
+      const survey = rows.map((question) => ({
+        questionId: question.id,
+        questionText: question.text,
+        type: question.type,
+        min: question.minAns,
+        max: question.maxAns,
+        optionId: question.Oid,
+        optionText: question.description
+      }));
       resolve(survey);
     })
-    
+
   })
+}
+
+//Create a new user and return its ID
+exports.createUser = (name) => {
+  return new Promise((resolve, reject) => {
+    const sql = 'INSERT INTO USER (name) VALUES(?)';
+    db.run(sql, [name], function (err) {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(this.lastID);
+    });
+  });
+}
+
+//Send and save the answers of a certain user in the DB
+exports.saveAnswers = (answers) => {
+  // answer = {answerText (if any), questionId, optionId (if any), userId}
+  return new Promise((resolve, reject) => {
+    let error;
+    for(let i = 0; i < answers.length; i++){
+      let sql = 'INSERT INTO ANSWER (answerText, questionId, optionId, userId) VALUES(?, ?, ?, ?)';
+      db.run(sql, [answers[i].answerText, answers[i].questionId, answers[i].optionId, answers[i].userId], function(err){
+        if(err){
+          error = err;
+        }
+      });
+    }
+
+    if(!error){
+      resolve(true);
+    }
+    else{
+      reject(error);
+    }
+    
+  });
 }
 

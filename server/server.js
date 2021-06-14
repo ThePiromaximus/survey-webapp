@@ -2,7 +2,7 @@
 const express = require('express');
 const passport = require('passport');
 const session = require('express-session');
-const { check } = require('express-validator');
+const { check, validationResult } = require('express-validator');
 const LocalStrategy = require('passport-local').Strategy;
 const morgan = require('morgan'); // logging middleware
 const DAO = require("./dao");
@@ -37,7 +37,7 @@ passport.use(new LocalStrategy({
         return done(null, false, { message: 'Wrong credentials. Admin not found.' });
       }
       //Admin found
-      return done(null, admin );
+      return done(null, admin);
     });
   }));
 
@@ -72,21 +72,21 @@ passport.deserializeUser((id, done) => {
 app.post('/api/login', [
   check('username').isEmail(),
   check('password').isString()
-  ], function (req, res, next) {
-    passport.authenticate("local", (err, admin, info) => {
-      if (err) return next(err);
+], function (req, res, next) {
+  passport.authenticate("local", (err, admin, info) => {
+    if (err) return next(err);
 
-      if (!admin) {
-        // display wrong login messages
-        return res.status(401).json(info);
-      }
-      // success, perform the login
-      req.login(admin, (err) => {
-        if (err) return next(err);
-        return res.json(admin);
-      });
-    })(req, res, next);
-  });
+    if (!admin) {
+      // display wrong login messages
+      return res.status(401).json(info);
+    }
+    // success, perform the login
+    req.login(admin, (err) => {
+      if (err) return next(err);
+      return res.json(admin);
+    });
+  })(req, res, next);
+});
 /*
   ***********************************************************
   ************ END OF AUTHENTICATION FUNCTIONS **************
@@ -102,19 +102,43 @@ const isLoggedIn = (req, res, next) => {
 }
 
 //Logout
-app.delete('/api/logout' ,(req, res) => {
+app.delete('/api/logout', (req, res) => {
   req.logout();
   res.end();
 });
 
 //This function is used to listen for getAllSurveys() API
-app.get('/api/surveys', async(req, res) => {
-  await DAO.getAllSurveys().then(surveys => res.json(surveys)).catch(()=> res.status(500).json("Database unreachable"));
+app.get('/api/surveys', async (req, res) => {
+  await DAO.getAllSurveys().then(surveys => res.json(surveys)).catch(() => res.status(500).json("Database unreachable"));
 });
 
 //This function is used to listen for getSurvey() API
-app.get('/api/survey=:survey', [check('survey').isInt({min:0})], async(req, res) => {
-  await DAO.getSurvey(req.params.survey).then( questions => res.json(questions)).catch(() => res.status(500).json("Database unreachable"));
+app.get('/api/survey=:survey', [check('survey').isInt({ min: 0 })], async (req, res) => {
+  if (validationResult(req).isEmpty) {
+    await DAO.getSurvey(req.params.survey).then(questions => res.json(questions)).catch(() => res.status(500).json("Database unreachable"));
+  } else {
+    //Status 422: Unprocessable Entity, the request was well-formed but was unable to be followed due to semantic errors.
+    return res.status(422).json({ errors: errors.array() })
+  }
+
+});
+
+//This function is used to listen for createUser() API
+app.post('/api/user', [check('name').isString({ min: 0 })], async (req, res) => {
+  if (validationResult(req).isEmpty) {
+    await DAO.createUser(req.body.name).then(userId => res.json(userId)).catch(() => res.status(500).json("Database unreachable"));
+  } else {
+    //Status 422: Unprocessable Entity, the request was well-formed but was unable to be followed due to semantic errors.
+    return res.status(422).json({ errors: errors.array() })
+  }
+
+});
+
+//This function is used to listen for saveAnswers() API
+app.post('/api/survey',
+  async (req, res) => {   
+      //req.body contains the array of answers given by a certain user in a certain survey
+      await DAO.saveAnswers(req.body).then(() => res.status(200)).catch(() => res.status(500).json("Database unreachable"));
 });
 
 //The server is listening...

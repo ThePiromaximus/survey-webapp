@@ -56,5 +56,42 @@ async function getSurvey(id){
     }
 }
 
-const API = { login, logout, getAllSurveys, getSurvey }
+//API to create a new user and receive its ID as a response
+async function createUser(name){
+    const url = '/api/user';
+    try{
+        const res = await axios.post(url,{ name: name});
+        return res.data;
+    }catch(error) {
+            alert("ERROR ON createUser() API");
+     };
+}
+
+//API to insert answers of a survey in the DB
+async function saveAnswers(answers){
+    const url = '/api/survey';
+    let answerTemp = [];
+    for(let i = 0; i < answers.length; i++){
+        // answer = {answerText (if any), questionId, optionId (if any), userId}
+        let answer = {  
+            answerText: answers[i].answerText,
+            questionId: +answers[i].questionId,
+            optionId: +answers[i].optionId,
+            userId: +answers[i].userId
+        };
+
+        answerTemp.push(answer);
+    }
+    
+    try{
+        
+        const res = await axios.post(url, answerTemp);
+        return res;
+            
+    }catch(error){
+        alert("ERROR ON saveAnswers() API");
+    }
+}
+
+const API = { login, logout, getAllSurveys, getSurvey, createUser, saveAnswers }
 export default API;
