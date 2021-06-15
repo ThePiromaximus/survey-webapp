@@ -14,7 +14,7 @@ const db = new sqlite.Database('survey.db', (err) => {
 exports.getAdmin = (username, password) => {
   return new Promise((resolve, reject) => {
     const sql = 'SELECT * FROM ADMIN WHERE username = ?';
-    db.get(sql, [username], (err, row) => {
+    db.get(sql, [username], function (err, row) {
       if (err)
         reject(err);
       else if (row === undefined) {
@@ -38,7 +38,7 @@ exports.getAdmin = (username, password) => {
 exports.getAdminId = (id) => {
   return new Promise((resolve, reject) => {
     const sql = 'SELECT * FROM ADMIN WHERE id = ?';
-    db.get(sql, [id], (err, row) => {
+    db.get(sql, [id], function (err, row) {
       if (err)
         reject(err);
       else if (row === undefined) {
@@ -86,7 +86,7 @@ exports.getSurvey = (id) => {
                   FROM QUESTION Q LEFT JOIN OPTION O ON O.questionId = Q.id
                   WHERE Q.surveyId = ?
                 `;
-    db.all(sql, [id], (err, rows) => {
+    db.all(sql, [id], function (err, rows) {
       if (err) {
         reject(err);
         return;
@@ -109,8 +109,9 @@ exports.getSurvey = (id) => {
 //Create a new user and return its ID
 exports.createUser = (name) => {
   return new Promise((resolve, reject) => {
+    console.log(name);
     const sql = 'INSERT INTO USER (name) VALUES(?)';
-    db.run(sql, [name], (err) => {
+    db.run(sql, [name], function (err) {
       if (err) {
         reject(err);
         return;
@@ -127,7 +128,7 @@ exports.saveAnswers = (answers) => {
     let error = "";
     for(let i = 0; i < answers.length; i++){
       let sql = 'INSERT INTO ANSWER (answerText, questionId, optionId, userId) VALUES(?, ?, ?, ?)';
-      db.run(sql, [answers[i].answerText, answers[i].questionId, answers[i].optionId, answers[i].userId],(err) => {
+      db.run(sql, [answers[i].answerText, answers[i].questionId, answers[i].optionId, answers[i].userId],function(err) {
         if(err){
           error = err;
         }
@@ -148,11 +149,12 @@ exports.saveAnswers = (answers) => {
 exports.getAdminSurveys = (id) => {
   return new Promise((resolve, reject) => {
     const sql = ` SELECT S.id, S.title, COUNT(DISTINCT A.userId) AS submissions
-                  FROM SURVEY S, QUESTION Q, ANSWER A 
-                  WHERE S.adminId = ? AND Q.surveyId = S.id AND A.questionId = Q.id
+                  FROM SURVEY S, QUESTION Q
+                  LEFT JOIN ANSWER A ON A.questionId = Q.id
+                  WHERE S.adminId = ? AND Q.surveyId = S.id
                   GROUP BY S.id, S.title
                 `;
-    db.all(sql, [id], (err, rows) => {
+    db.all(sql, [id], function (err, rows) {
       if(err){
         reject(err);
         return;

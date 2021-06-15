@@ -18,6 +18,11 @@ function SurveyPreview(props) {
         setShow(true);
     }
 
+    const handleSeeResult = async () => {
+        props.setCreateSurvey(false);
+        props.setSeeResult(true);
+    }
+
 
 
     if (!props.admin) {
@@ -55,7 +60,7 @@ function SurveyPreview(props) {
                         <Row className="align-items-center justify-content-between">
                             <Col><Card.Title className="m-0 text-left">{props.title}</Card.Title></Col>
                             <Col className="text-right">
-                                <Button variant="primary">See answers</Button>
+                                <Button variant="primary" onClick={() => handleSeeResult()}>See answers</Button>
                             </Col>
                         </Row>
                         <hr/>

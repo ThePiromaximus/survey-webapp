@@ -18,6 +18,8 @@ function SurveysList(props) {
                     id={survey.id}
                     admin={props.admin}
                     submissions={survey.submissions}
+                    setSeeResult={props.setSeeResult}
+                    setCreateSurvey={props.setCreateSurvey}
                 ></SurveyPreview>));
         }
 
