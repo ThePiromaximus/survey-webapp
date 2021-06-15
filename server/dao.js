@@ -147,11 +147,10 @@ exports.saveAnswers = (answers) => {
 //Get all the surveys of a certain admin
 exports.getAdminSurveys = (id) => {
   return new Promise((resolve, reject) => {
-    console.log("DAO")
-    console.log(id);
-    const sql = ` SELECT id, title 
-                  FROM SURVEY 
-                  WHERE adminId = ?
+    const sql = ` SELECT S.id, S.title, COUNT(DISTINCT A.userId) AS submissions
+                  FROM SURVEY S, QUESTION Q, ANSWER A 
+                  WHERE S.adminId = ? AND Q.surveyId = S.id AND A.questionId = Q.id
+                  GROUP BY S.id, S.title
                 `;
     db.all(sql, [id], (err, rows) => {
       if(err){
@@ -160,7 +159,8 @@ exports.getAdminSurveys = (id) => {
       }
       const surveys = rows.map( (survey) => ({
         id: survey.id,
-        title: survey.title
+        title: survey.title,
+        submissions: survey.submissions
       }));
       resolve(surveys);
     });

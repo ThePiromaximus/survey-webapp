@@ -17,6 +17,7 @@ function SurveysList(props) {
                     title={survey.title}
                     id={survey.id}
                     admin={props.admin}
+                    submissions={survey.submissions}
                 ></SurveyPreview>));
         }
 

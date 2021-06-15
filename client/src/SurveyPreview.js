@@ -8,6 +8,7 @@ function SurveyPreview(props) {
     const [surveyTitle, setSurveyTitle] = useState("");
     const [questions, setQuestions] = useState([]);
 
+
     //I use this function to get the clicked survey through the APIs
     const handleOpenSurvey = async (surveyId, title) => {
         //The API.getSurvey get all the questions of the survey
@@ -17,10 +18,10 @@ function SurveyPreview(props) {
         setShow(true);
     }
 
-    if(!props.admin)
-    {
-        return (
 
+
+    if (!props.admin) {
+        return (
             <>
                 <Card bg="light" className="m-2 p-1">
                     <Card.Body >
@@ -37,17 +38,16 @@ function SurveyPreview(props) {
                         </Row>
                     </Card.Body>
                 </Card>
-                <ModalSurvey 
-                    show={show} 
-                    setShow={setShow} 
+                <ModalSurvey
+                    show={show}
+                    setShow={setShow}
                     surveyTitle={surveyTitle}
                     questions={questions}
                 >
                 </ModalSurvey>
             </>
-    
         );
-    }else{
+    } else {
         return (
             <>
                 <Card className="m-2 p-1">
@@ -58,12 +58,18 @@ function SurveyPreview(props) {
                                 <Button variant="primary">See answers</Button>
                             </Col>
                         </Row>
+                        <hr/>
+                        <Row className="align-items-center justify-content-between">
+                            <Col>
+                                The survey was submitted by {props.submissions} person(s)
+                            </Col>
+                        </Row>
                     </Card.Body>
                 </Card>
             </>
         );
     }
-    
+
 }
 
 export default SurveyPreview;
