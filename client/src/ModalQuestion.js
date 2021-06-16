@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Modal, Form, Button, Row, Col } from "react-bootstrap";
+import { Modal, Form, Button, Row, Col, Alert } from "react-bootstrap";
 
 function ModalQuestion(props) {
 
@@ -10,10 +10,11 @@ function ModalQuestion(props) {
     const [options, setOptions] = useState([]);
     const [showOptionModal, setShowOptionModal] = useState(false);
     const [tempOption, setTempOption] = useState("");
+    const [error, setError] = useState("");
 
-    useEffect(()=>{
+    useEffect(() => {
         setMax(0);
-        setMin(0);        
+        setMin(0);
     }, [showOptionModal])
 
     //Used to check if an open question is mandatory or not
@@ -53,29 +54,39 @@ function ModalQuestion(props) {
     //Used to insert a new closed question (and its options) in props.questions
     const handleSubmitClosed = (event) => {
         event.preventDefault();
-        props.setQuestions(() => {
-            let temp = props.questions.map(e => e);
-            temp.push({
-                text: textOfQuestion,
-                type: 0,
-                options: options,
-                max: +max,
-                min: +min
+        if(options.length===0){
+            setError("You must create at least 1 answer!");
+        }
+        else if (max === 0) {
+            setError("The max attribute must be at least 1!");
+        } else {
+            props.setQuestions(() => {
+                let temp = props.questions.map(e => e);
+                temp.push({
+                    text: textOfQuestion,
+                    type: 0,
+                    options: options,
+                    max: +max,
+                    min: +min
+                });
+                return temp;
             });
-            return temp;
-        });
-        setTextOfQuestion("");
-        setTempOption("");
-        setOptions([]);
-        setMin(0);
-        setMax(0);
-        props.setShow(false);
+            setError("");
+            setTextOfQuestion("");
+            setTempOption("");
+            setOptions([]);
+            setMin(0);
+            setMax(0);
+            props.setShow(false);
+        }
+
     }
 
     //Used to close the two modals (open questions and closed questions)
     const handleClose = () => {
         setIsMandatory(false);
         setTextOfQuestion("");
+        setError("");
         setOptions([]);
         props.setShow(false);
     }
@@ -116,7 +127,7 @@ function ModalQuestion(props) {
                                     </Button>
                                 </Col>
                             </Row>
-                            <hr/>
+                            <hr />
                             <Form.Label>Select max. number of selectable  answers for this question</Form.Label>
                             <Form.Control type="number" defaultValue="0" max={options.length} min={min} onChange={(event) => setMax(event.target.value)}></Form.Control>
                             <Form.Label>Select min. number of selectable answers for this question</Form.Label>
@@ -131,6 +142,11 @@ function ModalQuestion(props) {
                                 Submit
                             </Button>
                         </Modal.Footer>
+                        <Col >
+                            <Row className="justify-content-center">
+                                {error !== "" ? <Alert variant="danger">{error}</Alert> : <></>}
+                            </Row>
+                        </Col>
                     </Form>
                 </Modal>
                 {showOptionModal ?
