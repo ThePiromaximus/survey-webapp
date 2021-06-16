@@ -45,7 +45,9 @@ function OpenQuestion(props) {
                     {props.question.questionText}
                 </h6>
             </Form.Label>
-            <Form.Control maxLength={200} as="textarea" type="text" placeholder="Insert your answer here.." rows={3} />
+            <Form.Control maxLength={200} as="textarea" 
+                        type="text" placeholder="Insert your answer here.." 
+                        rows={3}  onChange={(event)=>handleAnswer(event)} />
         </>);
     }
 

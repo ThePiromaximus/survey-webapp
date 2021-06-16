@@ -68,7 +68,6 @@ function ModalSurvey(props) {
             return answers.forEach(element => element.userId = userId);
         });
         
-        
         await API.saveAnswers(answers);
 
     };

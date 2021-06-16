@@ -36,10 +36,10 @@ function AdminDashboard(props) {
             await API.addQuestions(surveyId, questions);
             setError("");
             setCreateSurvey(false);
-            console.log("Sondaggio " + title + " creato");
-            console.log(questions);
             setTitle("");
             setQuestions([]);
+            const newSurveys = await API.getAdminSurveys(props.admin.id);
+            props.setAdminSurveys(newSurveys);
         }
         
     }

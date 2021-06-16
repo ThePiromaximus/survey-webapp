@@ -161,6 +161,7 @@ app.post('/api/admin=:admin/survey', [check('admin').isInt({ min: 0 }), check('t
   }
 });
 
+//This function is used to listen for senQuestions() API
 app.post('/api/admin/survey/questions', [check('id').isInt({min: 0})], async (req, res) => {
   if(validationResult(req).isEmpty) {
     await DAO.addQuestions(req.body.id, req.body.questions).then(() => res.status(200).end()).catch(() => res.status(500).json("Database unreachable"));
