@@ -20,6 +20,12 @@ function SurveysList(props) {
                     submissions={survey.submissions}
                     setSeeResult={props.setSeeResult}
                     setCreateSurvey={props.setCreateSurvey}
+                    setUserHasSubmitted={props.setUserHasSubmitted}
+                    userHasSubmitted={props.userHasSubmitted}
+                    setCurrentUser={props.setCurrentUser}
+                    setCurrentSurvey={props.setCurrentSurvey}
+                    currentSurvey={props.currentSurvey}
+                    setSubmission={props.setSubmission}
                 ></SurveyPreview>));
         }
 

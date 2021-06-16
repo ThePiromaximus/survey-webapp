@@ -162,14 +162,38 @@ app.post('/api/admin=:admin/survey', [check('admin').isInt({ min: 0 }), check('t
 });
 
 //This function is used to listen for senQuestions() API
-app.post('/api/admin/survey/questions', [check('id').isInt({min: 0})], async (req, res) => {
-  if(validationResult(req).isEmpty) {
+app.post('/api/admin/survey/questions', [check('id').isInt({ min: 0 })], async (req, res) => {
+  if (validationResult(req).isEmpty) {
     await DAO.addQuestions(req.body.id, req.body.questions).then(() => res.status(200).end()).catch(() => res.status(500).json("Database unreachable"));
-  }else{
+  } else {
     //Status 422: Unprocessable Entity, the request was well-formed but was unable to be followed due to semantic errors.
     return res.status(422).json({ errors: errors.array() })
   }
 });
+
+//This function is used to listen for getUsersHasSubmitted() API
+app.get('/api/survey=:survey/users', [check('survey').isInt({ min: 0 })], async (req, res) => {
+  if (validationResult(req).isEmpty) {
+    await DAO.getUsersHasSubmitted(req.params.survey).then(users => res.json(users)).catch(() => res.status(500).json("Database unreachable"));
+  } else {
+    //Status 422: Unprocessable Entity, the request was well-formed but was unable to be followed due to semantic errors.
+    return res.status(422).json({ errors: errors.array() })
+  }
+
+});
+
+//This function is used to listen for getSubmission() API
+app.get('/api/survey=:survey/user=:user',
+  [check('survey').isInt({ min: 0 }), check('user').isInt({ min: 0 })],
+  async (req, res) => {
+    if (validationResult(req).isEmpty) {
+      await DAO.getSubmission(req.params.survey, req.params.user).then(submission => res.json(submission)).catch(() => res.status(500).json("Database unreachable"));
+    } else {
+      //Status 422: Unprocessable Entity, the request was well-formed but was unable to be followed due to semantic errors.
+      return res.status(422).json({ errors: errors.array() })
+    }
+
+  });
 
 //The server is listening...
 app.listen(port, () => {

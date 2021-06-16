@@ -226,3 +226,98 @@ exports.addQuestions = (id, questions) => {
   });
 }
 
+//Get all the users that has submitted a certain survey
+exports.getUsersHasSubmitted = (id) => {
+  return new Promise((resolve, reject) => {
+    const sql = `
+                  SELECT DISTINCT A.userId, U.name
+                  FROM QUESTION Q, USER U, ANSWER A
+                  WHERE Q.surveyId = ? AND A.questionId = Q.id AND A.userId = U.id
+                `;
+    db.all(sql, [id], function (err, rows) {
+      if (err) {
+        reject(err);
+        return;
+      }
+      const users = rows.map((user) => ({
+        id: user.userId,
+        name: user.name
+      }));
+      resolve(users);
+    });
+
+  });
+}
+
+//Get all the questions and relative answers of a certain survey submitted by a certain user
+exports.getSubmission = (surveyId, userId) => {
+  return new Promise((resolve, reject) => {
+
+    const sql = `
+                  SELECT Q.id AS questionId, Q.text, Q.type, Q.minAns, Q.maxAns, 
+                  O.id AS optionId, O.description AS optionDescription, A.answerText, A.optionId AS optionSelected
+                  FROM QUESTION Q
+                  LEFT JOIN OPTION O ON O.questionId = Q.id 
+                  LEFT JOIN ANSWER A ON A.questionId = Q.id
+                  WHERE Q.surveyId = ? AND A.userId = ?
+                  ORDER BY Q.id
+                `
+    db.all(sql, [surveyId, userId], function (err, rows) {
+      if (err) {
+        reject(err);
+        return;
+      }
+     
+      let alreadyDid = [];
+      let submission = rows.map((question) => {
+        if (question.type !== 0) {
+          //Open question
+          return ({
+            id: question.questionId,
+            type: question.type,
+            text: question.text,
+            answer: question.answerText
+          });
+        } else {
+          //Closed question
+          if (!alreadyDid.includes(question.questionId)) {
+            alreadyDid.push(question.questionId);
+            let options = [];
+            let selectedOptions = [];
+            //All the options of the questions
+            rows.forEach((question) => {
+              if (!options.includes(question.optionDescription)) {
+                if(question.optionDescription!==null)
+                  options.push(question.optionDescription);
+              }
+            });
+
+            //Options selected by the user
+            rows.forEach((question) => {
+              if (!selectedOptions.includes(question.optionDescription)) {
+                if (question.optionSelected === question.optionId) {
+                  selectedOptions.push(question.optionDescription)
+                }
+              }
+            });
+
+            return ({
+              id: question.questionId,
+              type: question.type,
+              text: question.text,
+              min: question.minAns,
+              max: question.maxAns,
+              options: options,
+              selectedOptions: selectedOptions
+            });
+
+          }
+        }
+
+      });
+
+      submission = submission.filter((e) => e!==undefined);
+      resolve(submission);
+    });
+  });
+}

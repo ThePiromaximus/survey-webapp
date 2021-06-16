@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { Row, Col, Button, Form, Container, Alert } from "react-bootstrap";
 import ModalQuestion from "./ModalQuestion";
 import SurveysList from "./SurveysList";
 import QuestionList from "./QuestionList";
+import Results from "./Results";
 import API from "./API";
 
 function AdminDashboard(props) {
@@ -14,6 +15,24 @@ function AdminDashboard(props) {
     const [title, setTitle] = useState("");
     const [questions, setQuestions] = useState([]);
     const [error, setError] = useState("");
+    //Contains the users (name and id) who submitted a specific form (clicked "see answers")
+    const [userHasSubmitted, setUserHasSubmitted] = useState([]) 
+    //Contains the id of the current user whose responses I am seeing right now
+    const [currentUser, setCurrentUser] = useState(0);
+    //Contains the id of the current survey whose response I am seeing right now
+    const [currentSurvey, setCurrentSurvey] = useState(0);
+    const [submission, setSubmission] = useState([]);
+
+    //UPDATE THE SURVEY THAT IM LOOKING
+    useEffect(()=>{
+
+        const updateSubmission = async (surveyId, userId) => {
+            const sub = await API.getSubmission(surveyId, userId);
+            setSubmission(sub);
+        }
+
+        updateSubmission(currentSurvey, currentUser.id)
+    }, [currentUser]);
 
     const handleOpenCreate = () => {
         setSeeResult(false);
@@ -62,11 +81,17 @@ function AdminDashboard(props) {
                     <hr />
                     <SurveysList admin={props.admin} adminSurveys={props.adminSurveys}
                         setAdminSurveys={props.setAdminSurveys}
-                        setSeeResult={setSeeResult} setCreateSurvey={setCreateSurvey}>
+                        setSeeResult={setSeeResult} setCreateSurvey={setCreateSurvey}
+                        setUserHasSubmitted={setUserHasSubmitted} setCurrentUser={setCurrentUser}
+                        setCurrentSurvey={setCurrentSurvey} userHasSubmitted={userHasSubmitted}
+                        currentSurvey={currentSurvey} setSubmission={setSubmission}
+                    >
                     </SurveysList>
                 </Col>
                 <Col sm={8}>
-                    {seeResult ? <>GUARDO RISULTATI</> : <></>}
+                    {seeResult ? <Results userHasSubmitted={userHasSubmitted} currentUser={currentUser} setCurrentUser={setCurrentUser} 
+                                     currentSurvey={currentSurvey} submission={submission} setSubmission={setSubmission}>
+                    </Results> : <></>}
                     {createSurvey ?
                         <Container>
                             <Row className="justify-content-center">

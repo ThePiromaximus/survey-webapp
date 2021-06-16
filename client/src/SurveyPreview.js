@@ -10,6 +10,7 @@ function SurveyPreview(props) {
 
 
     //I use this function to get the clicked survey through the APIs
+    //Used to "fill out" surveys in user-side
     const handleOpenSurvey = async (surveyId, title) => {
         //The API.getSurvey get all the questions of the survey
         const surveyQuestions = await API.getSurvey(surveyId);
@@ -18,12 +19,19 @@ function SurveyPreview(props) {
         setShow(true);
     }
 
-    const handleSeeResult = async () => {
-        props.setCreateSurvey(false);
-        props.setSeeResult(true);
+    //I use this function in admin side to see the answers that users gave to a certain survey
+    const handleSeeResult = async (surveyId) => {
+        //I get the list of all users who submitted the selected survey
+        const users = await API.getUsersHasSubmitted(props.id);
+        await props.setUserHasSubmitted(users);
+        await props.setCurrentUser(users[0]);
+        await props.setCurrentSurvey(surveyId);
+        const submission = await API.getSubmission(surveyId, users[0].id);
+        await props.setSubmission(submission)
+        await props.setCreateSurvey(false);
+        await props.setSeeResult(true);
     }
-
-
+    
 
     if (!props.admin) {
         return (
@@ -60,13 +68,13 @@ function SurveyPreview(props) {
                         <Row className="align-items-center justify-content-between">
                             <Col><Card.Title className="m-0 text-left">{props.title}</Card.Title></Col>
                             <Col className="text-right">
-                                <Button variant="primary" onClick={() => handleSeeResult()}>See answers</Button>
+                                <Button variant="primary" onClick={() => handleSeeResult(props.id)}>See answers</Button>
                             </Col>
                         </Row>
                         <hr/>
                         <Row className="align-items-center justify-content-between">
                             <Col>
-                                The survey was submitted by {props.submissions} person(s)
+                                The survey was submitted by {props.submissions} people
                             </Col>
                         </Row>
                     </Card.Body>

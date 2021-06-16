@@ -152,5 +152,30 @@ async function addQuestions(id, questions){
     }
 }
 
-const API = { login, logout, getAllSurveys, getSurvey, createUser, saveAnswers, getAdminSurveys, createSurvey, addQuestions }
+//API to get the list of users who submitted a certain survey, givent its id
+async function getUsersHasSubmitted(id){
+    const url = `/api/survey=${id}/users`;
+    try{
+        const res = await axios.get(url, {id: id});
+        const users = await res.data;
+        return users;
+    }catch(error){
+        alert("ERROR ON getUsersHasSubmitted() API");
+    }
+
+}
+
+//API to get the questions and answers of a survey submitted by a certain user, given the survey id
+//and the userId
+async function getSubmission(surveyId, userId){
+    const url = `/api/survey=${surveyId}/user=${userId}`;
+    try{
+        const res = await axios.get(url, {surveyId: surveyId, userId: userId});
+        return res.data;
+    }catch(error){
+        alert("ERROR ON getSubmission() API");
+    }
+}
+
+const API = { login, logout, getAllSurveys, getSurvey, createUser, saveAnswers, getAdminSurveys, createSurvey, addQuestions, getUsersHasSubmitted, getSubmission }
 export default API;
