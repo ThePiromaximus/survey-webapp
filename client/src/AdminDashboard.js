@@ -3,6 +3,7 @@ import { Row, Col, Button, Form, Container, Alert } from "react-bootstrap";
 import ModalQuestion from "./ModalQuestion";
 import SurveysList from "./SurveysList";
 import QuestionList from "./QuestionList";
+import API from "./API";
 
 function AdminDashboard(props) {
 
@@ -19,15 +20,20 @@ function AdminDashboard(props) {
         setCreateSurvey(true);
     }
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         setSeeResult(false);
         
-        console.log(questions)
         if(questions.length===0){
             //There aren't questions in the survey
             setError("You cannot publish an empty survey!");
         }else{
+
+            //Creation of the empty survey in the db
+            const surveyId = await API.createSurvey(props.admin.id, title);
+            //From the previous API i receive the ID of the survey just created
+            //I use this id to insert all the questions in the DB
+            await API.addQuestions(surveyId, questions);
             setError("");
             setCreateSurvey(false);
             console.log("Sondaggio " + title + " creato");

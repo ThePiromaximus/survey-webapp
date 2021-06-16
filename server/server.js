@@ -70,7 +70,7 @@ passport.deserializeUser((id, done) => {
 
 //This route is used to receive login requests 
 app.post('/api/login', [
-  check('username').isEmail(),
+  check('username').isString(),
   check('password').isString()
 ], function (req, res, next) {
   passport.authenticate("local", (err, admin, info) => {
@@ -146,6 +146,25 @@ app.get('/api/admin=:admin', [check('admin').isInt({ min: 0 })], async (req, res
   if (validationResult(req).isEmpty) {
     await DAO.getAdminSurveys(req.params.admin).then(surveys => res.json(surveys)).catch(() => res.status(500).json("Database unreachable"));
   } else {
+    //Status 422: Unprocessable Entity, the request was well-formed but was unable to be followed due to semantic errors.
+    return res.status(422).json({ errors: errors.array() })
+  }
+});
+
+//This function is used to listen for createSurvey() API
+app.post('/api/admin=:admin/survey', [check('admin').isInt({ min: 0 }), check('title').isString({ min: 0 })], async (req, res) => {
+  if (validationResult(req).isEmpty) {
+    await DAO.createSurvey(req.body.id, req.body.title).then(surveyId => res.json(surveyId)).catch(() => res.status(500).json("Database unreachable"));
+  } else {
+    //Status 422: Unprocessable Entity, the request was well-formed but was unable to be followed due to semantic errors.
+    return res.status(422).json({ errors: errors.array() })
+  }
+});
+
+app.post('/api/admin/survey/questions', [check('id').isInt({min: 0})], async (req, res) => {
+  if(validationResult(req).isEmpty) {
+    await DAO.addQuestions(req.body.id, req.body.questions).then(() => res.status(200).end()).catch(() => res.status(500).json("Database unreachable"));
+  }else{
     //Status 422: Unprocessable Entity, the request was well-formed but was unable to be followed due to semantic errors.
     return res.status(422).json({ errors: errors.array() })
   }

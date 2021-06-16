@@ -105,5 +105,52 @@ async function getAdminSurveys(id){
     }
 }
 
-const API = { login, logout, getAllSurveys, getSurvey, createUser, saveAnswers, getAdminSurveys }
+//API to create a new (empty) survey and return its ID
+async function createSurvey(id, title){
+    const url = `/api/admin=${id}/survey`;
+    try{
+        const res = await axios.post(url, {id: id, title: title});
+        return res.data;
+    }catch(error){
+        alert("ERROR ON createSurvey() API");
+    }
+}
+
+//API to add questions to a new (empty) survey given its ID
+async function addQuestions(id, questions){
+    const url = `/api/admin/survey/questions`;
+    let questionsTemp = [];
+    for(let i = 0; i < questions.length; i++){
+        //questions = {text, type, options (if any), max (if any), min(if any)}
+        let question;
+        if(questions[i].type===0){
+            question = {  
+                text: questions[i].text,
+                type: +questions[i].type,
+                options: questions[i].options,
+                max: +questions[i].max,
+                min: +questions[i].min,
+            };
+        }else{
+            question = {  
+                text: questions[i].text,
+                type: +questions[i].type,
+                options: null,
+                max: null,
+                min: null,
+            };
+        }
+        
+        questionsTemp.push(question);
+    }
+    
+    try{
+        const res = await axios.post(url, {id: id, questions: questionsTemp});
+        return res.data;
+    }catch(error){
+        alert("ERROR ON addQuestion() API");
+    }
+}
+
+const API = { login, logout, getAllSurveys, getSurvey, createUser, saveAnswers, getAdminSurveys, createSurvey, addQuestions }
 export default API;

@@ -109,7 +109,6 @@ exports.getSurvey = (id) => {
 //Create a new user and return its ID
 exports.createUser = (name) => {
   return new Promise((resolve, reject) => {
-    console.log(name);
     const sql = 'INSERT INTO USER (name) VALUES(?)';
     db.run(sql, [name], function (err) {
       if (err) {
@@ -126,22 +125,22 @@ exports.saveAnswers = (answers) => {
   // answer = {answerText (if any), questionId, optionId (if any), userId}
   return new Promise((resolve, reject) => {
     let error = "";
-    for(let i = 0; i < answers.length; i++){
+    for (let i = 0; i < answers.length; i++) {
       let sql = 'INSERT INTO ANSWER (answerText, questionId, optionId, userId) VALUES(?, ?, ?, ?)';
-      db.run(sql, [answers[i].answerText, answers[i].questionId, answers[i].optionId, answers[i].userId],function(err) {
-        if(err){
+      db.run(sql, [answers[i].answerText, answers[i].questionId, answers[i].optionId, answers[i].userId], function (err) {
+        if (err) {
           error = err;
         }
       });
     }
 
-    if(error===""){
+    if (error === "") {
       resolve(true);
     }
-    else{
+    else {
       reject(error);
     }
-    
+
   });
 }
 
@@ -155,17 +154,75 @@ exports.getAdminSurveys = (id) => {
                   GROUP BY S.id, S.title
                 `;
     db.all(sql, [id], function (err, rows) {
-      if(err){
+      if (err) {
         reject(err);
         return;
       }
-      const surveys = rows.map( (survey) => ({
+      const surveys = rows.map((survey) => ({
         id: survey.id,
         title: survey.title,
         submissions: survey.submissions
       }));
       resolve(surveys);
     });
+  });
+}
+
+//Create a new (empty) survey given its title and the ID of the admin who created it
+exports.createSurvey = (id, title) => {
+  return new Promise((resolve, reject) => {
+    const sql = `INSERT INTO SURVEY (title, adminId) VALUES(?, ?)`;
+    db.run(sql, [title, id], function (err) {
+      if (err) {
+        reject(err);
+        return;
+      } else {
+        resolve(this.lastID);
+      }
+    });
+  });
+}
+
+//Add questions to a new survey
+exports.addQuestions = (id, questions) => {
+  return new Promise((resolve, reject) => {
+    let error = "";
+    let idForOptions;
+    const sql = "INSERT INTO QUESTION (text, type, minAns, maxAns, surveyId) VALUES(?, ?, ?, ?, ?)";
+    for (let i = 0; i < questions.length; i++) {
+      if (questions[i].type === 0) {
+        db.run(sql, [questions[i].text, questions[i].type, questions[i].min, questions[i].max, id], function (err) {
+          if (err) {
+            error = err;
+          } else {
+            idForOptions = this.lastID;
+
+            const sql2 = "INSERT INTO OPTION (description, questionId) VALUES(?, ?)";
+            for (let j = 0; j < questions[i].options.length; j++) {
+              db.run(sql2, [questions[i].options[j], idForOptions], function (err) {
+                if (err) {
+                  error = err;
+                }
+              });
+            }
+          }
+        });
+      } else {
+        db.run(sql, [questions[i].text, questions[i].type, questions[i].min, questions[i].max, id], function (err) {
+          if (err) {
+            error = err;
+          }
+        });
+      }
+    }
+
+    if (error === "") {
+      resolve(true);
+    }
+    else {
+      reject(error);
+    }
+
   });
 }
 
