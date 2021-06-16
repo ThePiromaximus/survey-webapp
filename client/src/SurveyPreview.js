@@ -61,6 +61,13 @@ function SurveyPreview(props) {
             </>
         );
     } else {
+        const disable = (n) => {
+            if(n===0){
+                return true;
+            }else{
+                return false;
+            }
+        }
         return (
             <>
                 <Card className="m-2 p-1">
@@ -68,7 +75,7 @@ function SurveyPreview(props) {
                         <Row className="align-items-center justify-content-between">
                             <Col><Card.Title className="m-0 text-left">{props.title}</Card.Title></Col>
                             <Col className="text-right">
-                                <Button variant="primary" onClick={() => handleSeeResult(props.id)}>See answers</Button>
+                                <Button variant="primary" disabled={disable(props.submissions)} onClick={() => handleSeeResult(props.id)}>See answers</Button>
                             </Col>
                         </Row>
                         <hr/>
