@@ -1,7 +1,5 @@
 import { useState } from "react";
 import { Form } from "react-bootstrap";
-//This variable is used to count how much boxes are checked and if they are between min and max
-
 
 function ClosedQuestion(props) {
     let min = props.question.min;
