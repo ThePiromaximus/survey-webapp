@@ -20,10 +20,6 @@ app.use(express.json());
   of admins on the web app
 */
 
-//Initialization of Passport to use sessions
-app.use(passport.initialize());
-app.use(passport.session());
-
 //This function is used to find the user with the given credentials
 //It returns done(), that could be the authenticated user (OK) or 'false' and a message (NOT OK)
 passport.use(new LocalStrategy({
@@ -68,6 +64,10 @@ passport.deserializeUser((id, done) => {
     });
 });
 
+//Initialization of Passport to use sessions
+app.use(passport.initialize());
+app.use(passport.session());
+
 //This route is used to receive login requests 
 app.post('/api/login', [
   check('username').isString(),
@@ -87,11 +87,15 @@ app.post('/api/login', [
     });
   })(req, res, next);
 });
-/*
-  ***********************************************************
-  ************ END OF AUTHENTICATION FUNCTIONS **************
-  ***********************************************************
-*/
+
+// --- Check whether the user is logged in or not
+app.get('/api/sessions/current', (req, res) => {
+  if(req.isAuthenticated()) {
+      res.status(200).json(req.user);
+  }
+  else
+      res.status(401).json({message: 'not authenticated'});
+});
 
 //This function is used to check if a request comes from an authenticated admin
 const isLoggedIn = (req, res, next) => {
@@ -100,6 +104,11 @@ const isLoggedIn = (req, res, next) => {
 
   return res.status(401).json({ error: 'not authenticated' });
 }
+/*
+  ***********************************************************
+  ************ END OF AUTHENTICATION FUNCTIONS **************
+  ***********************************************************
+*/
 
 //Logout
 app.delete('/api/logout', (req, res) => {
@@ -142,7 +151,7 @@ app.post('/api/survey',
   });
 
 //This function is used to listen for getAdminSurveys() API
-app.get('/api/admin=:admin', [check('admin').isInt({ min: 0 })], async (req, res) => {
+app.get('/api/admin=:admin', isLoggedIn, [check('admin').isInt({ min: 0 })], async (req, res) => {
   if (validationResult(req).isEmpty) {
     await DAO.getAdminSurveys(req.params.admin).then(surveys => res.json(surveys)).catch(() => res.status(500).json("Database unreachable"));
   } else {
@@ -152,7 +161,7 @@ app.get('/api/admin=:admin', [check('admin').isInt({ min: 0 })], async (req, res
 });
 
 //This function is used to listen for createSurvey() API
-app.post('/api/admin=:admin/survey', [check('admin').isInt({ min: 0 }), check('title').isString({ min: 0 })], async (req, res) => {
+app.post('/api/admin=:admin/survey', isLoggedIn, [check('admin').isInt({ min: 0 }), check('title').isString({ min: 0 })], async (req, res) => {
   if (validationResult(req).isEmpty) {
     await DAO.createSurvey(req.body.id, req.body.title).then(surveyId => res.json(surveyId)).catch(() => res.status(500).json("Database unreachable"));
   } else {
@@ -161,8 +170,8 @@ app.post('/api/admin=:admin/survey', [check('admin').isInt({ min: 0 }), check('t
   }
 });
 
-//This function is used to listen for senQuestions() API
-app.post('/api/admin/survey/questions', [check('id').isInt({ min: 0 })], async (req, res) => {
+//This function is used to listen for sendQuestions() API
+app.post('/api/admin/survey/questions', isLoggedIn, [check('id').isInt({ min: 0 })], async (req, res) => {
   if (validationResult(req).isEmpty) {
     await DAO.addQuestions(req.body.id, req.body.questions).then(() => res.status(200).end()).catch(() => res.status(500).json("Database unreachable"));
   } else {
@@ -172,7 +181,7 @@ app.post('/api/admin/survey/questions', [check('id').isInt({ min: 0 })], async (
 });
 
 //This function is used to listen for getUsersHasSubmitted() API
-app.get('/api/survey=:survey/users', [check('survey').isInt({ min: 0 })], async (req, res) => {
+app.get('/api/survey=:survey/users', isLoggedIn, [check('survey').isInt({ min: 0 })], async (req, res) => {
   if (validationResult(req).isEmpty) {
     await DAO.getUsersHasSubmitted(req.params.survey).then(users => res.json(users)).catch(() => res.status(500).json("Database unreachable"));
   } else {
@@ -183,7 +192,7 @@ app.get('/api/survey=:survey/users', [check('survey').isInt({ min: 0 })], async 
 });
 
 //This function is used to listen for getSubmission() API
-app.get('/api/survey=:survey/user=:user',
+app.get('/api/survey=:survey/user=:user', isLoggedIn, 
   [check('survey').isInt({ min: 0 }), check('user').isInt({ min: 0 })],
   async (req, res) => {
     if (validationResult(req).isEmpty) {

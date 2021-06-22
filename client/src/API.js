@@ -33,6 +33,17 @@ async function logout() {
         });
 }
 
+//API to check if the current user is logged in
+async function getCurrentSession() {
+    try{
+        const res = await axios.get("/api/sessions/current");
+        const admin = res.data;
+        return admin;
+    }catch(error){
+        return {};
+    }
+}
+
 //API to get ALL the surveys in the database (for all the users)
 async function getAllSurveys(){
     try{
@@ -177,5 +188,5 @@ async function getSubmission(surveyId, userId){
     }
 }
 
-const API = { login, logout, getAllSurveys, getSurvey, createUser, saveAnswers, getAdminSurveys, createSurvey, addQuestions, getUsersHasSubmitted, getSubmission }
+const API = { login, logout, getAllSurveys, getSurvey, createUser, saveAnswers, getAdminSurveys, createSurvey, addQuestions, getUsersHasSubmitted, getSubmission,  getCurrentSession }
 export default API;

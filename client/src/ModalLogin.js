@@ -1,5 +1,5 @@
 import { Modal, Button, Col, Row, Form, Alert } from "react-bootstrap";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import API from "./API";
 
 function ModalLogin(props) {
