@@ -254,30 +254,37 @@ exports.getSubmission = (surveyId, userId) => {
   return new Promise((resolve, reject) => {
 
     const sql = `
-                  SELECT Q.id AS questionId, Q.text, Q.type, Q.minAns, Q.maxAns, 
-                  O.id AS optionId, O.description AS optionDescription, A.answerText, A.optionId AS optionSelected
-                  FROM QUESTION Q
-                  LEFT JOIN OPTION O ON O.questionId = Q.id 
-                  LEFT JOIN ANSWER A ON A.questionId = Q.id
-                  WHERE Q.surveyId = ? AND A.userId = ?
-                  ORDER BY Q.id
+                SELECT Q.id AS questionId, A.answerText, A.optionId
+                FROM ANSWER A, QUESTION Q
+                WHERE Q.surveyId = ? AND A.userId = ? AND A.questionId = Q.id
                 `
     db.all(sql, [surveyId, userId], function (err, rows) {
       if (err) {
         reject(err);
         return;
       }
-     
+
+      
+      /*
       let alreadyDid = [];
       let submission = rows.map((question) => {
         if (question.type !== 0) {
           //Open question
-          return ({
-            id: question.questionId,
-            type: question.type,
-            text: question.text,
-            answer: question.answerText
-          });
+          let ans = rows.filter((q) => (q.questionId===question.questionId)).map((q) => q.answerText);
+          if(ans.length>1){
+            ans = ans.filter((a) => (a!==null));
+          }
+
+          if (!alreadyDid.includes(question.questionId)) {
+            alreadyDid.push(question.questionId);
+            return ({
+              id: question.questionId,
+              type: question.type,
+              text: question.text,
+              answer: ans[0]
+            });
+          }
+
         } else {
           //Closed question
           if (!alreadyDid.includes(question.questionId)) {
@@ -287,7 +294,7 @@ exports.getSubmission = (surveyId, userId) => {
             //All the options of the questions
             rows.forEach((question) => {
               if (!options.includes(question.optionDescription)) {
-                if(question.optionDescription!==null)
+                if (question.optionDescription !== null)
                   options.push(question.optionDescription);
               }
             });
@@ -313,11 +320,15 @@ exports.getSubmission = (surveyId, userId) => {
 
           }
         }
+        */
 
+        const answers = rows.map((answer) => ({
+          questionId: answer.questionId,
+          answerText: answer.answerText,
+          optionId: answer.optionId
+        }))
+        resolve(answers);
       });
-
-      submission = submission.filter((e) => e!==undefined);
-      resolve(submission);
+      
     });
-  });
 }

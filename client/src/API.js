@@ -176,7 +176,7 @@ async function getUsersHasSubmitted(id){
 
 }
 
-//API to get the questions and answers of a survey submitted by a certain user, given the survey id
+//API to get the answers of a survey submitted by a certain user, given the survey id
 //and the userId
 async function getSubmission(surveyId, userId){
     const url = `/api/survey=${surveyId}/user=${userId}`;
