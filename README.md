@@ -11,13 +11,36 @@
 - POST `/api/login`
   - request parameters and request body content
   - response body content
-- GET `/api/something`
+- GET `/api/sessions/current`
   - request parameters
   - response body content
-- POST `/api/something`
+- DELETE `/api/logout`
   - request parameters and request body content
   - response body content
-- ...
+- GET `/api/surveys`
+  - request parameters and request body content
+  - response body content
+- GET `/api/survey=:survey`
+  - request parameters and request body content
+  - response body content
+- POST `/api/user`
+  - request parameters and request body content
+  - response body content
+- POST `/api/survey`
+  - request parameters and request body content
+  - response body content
+- GET `/api/admin=:admin`
+  - request parameters and request body content
+  - response body content
+- POST `/api/admin=:admin/survey`
+  - request parameters and request body content
+  - response body content
+- GET `/api/survey=:survey/users`
+  - request parameters and request body content
+  - response body content
+- GET `/api/survey=:survey/user=:user`
+  - request parameters and request body content
+  - response body content
 
 ## Database Tables
 
