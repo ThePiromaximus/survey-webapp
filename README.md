@@ -1,11 +1,10 @@
-# Exam #1234: "Exam Title"
+# Exam #1234: "Questionari"
 ## Student: s287028 Inzerillo Gabriele 
 
 ## React Client Application Routes
 
-- Route `/`: page content and purpose
-- Route `/something/:param`: page content and purpose, param specification
-- ...
+- Route `/homepage`: nella homepage sono visualizzati tutti i questionari. La homepage è la route di "default" per gli utenti che non sono loggati.
+- Route `/admin`: route nella quale viene visualizzato il componente "AdminDashboard" e i relativi componenti figli. Rappresenta la schermata principale per un utente loggato, cioè un admin.
 
 ## API Server
 
