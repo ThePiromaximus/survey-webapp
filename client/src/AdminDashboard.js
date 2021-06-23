@@ -30,7 +30,6 @@ function AdminDashboard(props) {
             const questions = await API.getSurvey(surveyId);
             const answers = await API.getSubmission(surveyId, userId);
             let alreadyDid = [];
-            console.log(questions);
 
             let sub = questions.map((question) => {
                 //Open question
