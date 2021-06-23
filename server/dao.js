@@ -263,72 +263,13 @@ exports.getSubmission = (surveyId, userId) => {
         reject(err);
         return;
       }
-
-      
-      /*
-      let alreadyDid = [];
-      let submission = rows.map((question) => {
-        if (question.type !== 0) {
-          //Open question
-          let ans = rows.filter((q) => (q.questionId===question.questionId)).map((q) => q.answerText);
-          if(ans.length>1){
-            ans = ans.filter((a) => (a!==null));
-          }
-
-          if (!alreadyDid.includes(question.questionId)) {
-            alreadyDid.push(question.questionId);
-            return ({
-              id: question.questionId,
-              type: question.type,
-              text: question.text,
-              answer: ans[0]
-            });
-          }
-
-        } else {
-          //Closed question
-          if (!alreadyDid.includes(question.questionId)) {
-            alreadyDid.push(question.questionId);
-            let options = [];
-            let selectedOptions = [];
-            //All the options of the questions
-            rows.forEach((question) => {
-              if (!options.includes(question.optionDescription)) {
-                if (question.optionDescription !== null)
-                  options.push(question.optionDescription);
-              }
-            });
-
-            //Options selected by the user
-            rows.forEach((question) => {
-              if (!selectedOptions.includes(question.optionDescription)) {
-                if (question.optionSelected === question.optionId) {
-                  selectedOptions.push(question.optionDescription)
-                }
-              }
-            });
-
-            return ({
-              id: question.questionId,
-              type: question.type,
-              text: question.text,
-              min: question.minAns,
-              max: question.maxAns,
-              options: options,
-              selectedOptions: selectedOptions
-            });
-
-          }
-        }
-        */
-
-        const answers = rows.map((answer) => ({
-          questionId: answer.questionId,
-          answerText: answer.answerText,
-          optionId: answer.optionId
-        }))
-        resolve(answers);
-      });
-      
+      const answers = rows.map((answer) => ({
+        questionId: answer.questionId,
+        answerText: answer.answerText,
+        optionId: answer.optionId
+      }))
+      resolve(answers);
     });
+
+  });
 }
