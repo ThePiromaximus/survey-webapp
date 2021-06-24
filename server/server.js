@@ -88,7 +88,7 @@ app.post('/api/login', [
   })(req, res, next);
 });
 
-// --- Check whether the user is logged in or not
+//Check whether the user is logged in or not
 app.get('/api/sessions/current', (req, res) => {
   if(req.isAuthenticated()) {
       res.status(200).json(req.user);
@@ -163,7 +163,7 @@ app.get('/api/admin=:admin', isLoggedIn, [check('admin').isInt({ min: 0 })], asy
 //This function is used to listen for createSurvey() API
 app.post('/api/admin=:admin/survey', isLoggedIn, [check('admin').isInt({ min: 0 }), check('title').isString({ min: 0 })], async (req, res) => {
   if (validationResult(req).isEmpty) {
-    await DAO.createSurvey(req.body.id, req.body.title).then(surveyId => res.json(surveyId)).catch(() => res.status(500).json("Database unreachable"));
+    await DAO.createSurvey(req.params.admin, req.body.title).then(surveyId => res.json(surveyId)).catch(() => res.status(500).json("Database unreachable"));
   } else {
     //Status 422: Unprocessable Entity, the request was well-formed but was unable to be followed due to semantic errors.
     return res.status(422).json({ errors: errors.array() })
