@@ -1,4 +1,5 @@
 import { Container, Button, Row, Col, Form } from "react-bootstrap";
+import React from "react";
 
 function Results(props){
 
@@ -6,10 +7,10 @@ function Results(props){
 
     function renderSubmission() {
         //question = {id, type, text, min, max, options, selectedOptions}
-        let questionList = props.submission.map((question) => {
+        let questionList = props.submission.map((question, index) => {
             if(question.type === 1 || question.type === 2){
                 return (
-                    <Form>
+                    <Form key={index}>
                         <Form.Label>
                             {question.text}
                         </Form.Label>
@@ -26,19 +27,19 @@ function Results(props){
                     }
                 }
                 return (
-                    <Form>
+                    <Form key={index}>
                         <Form.Label>
                             {question.text}
                         </Form.Label>
-                        {question.options.map((option) => {
-                            return <Form.Check disabled type="checkbox" label={option} checked={check(option)}>
+                        {question.options.map((option, indexCB) => {
+                            return <Form.Check disabled type="checkbox" label={option} checked={check(option)} key={indexCB}>
                             </Form.Check>
                         })}
                         <hr/>
                     </Form>
                 );
             }else{
-                return <></>;
+                return <React.Fragment key={index}/>;
             }
         });
 
@@ -52,21 +53,25 @@ function Results(props){
                     const index = props.userHasSubmitted.indexOf(user);
                     if(index!==0){
                         //Actual user is not the first
+                        props.setUpdateSub((old) => (old + 1));
                         return props.userHasSubmitted[index-1];
                     }else{
                         return props.userHasSubmitted[index];
                     }
                 });
+                
         }else{
             props.setCurrentUser((user) => {
                 const index = props.userHasSubmitted.indexOf(user);
                 if(index!==(props.userHasSubmitted.length-1)){
                     //Actual user is not the first
+                    props.setUpdateSub((old) => (old + 1));
                     return props.userHasSubmitted[index+1];
                 }else{
                     return props.userHasSubmitted[index];
                 }
             });
+            
         }
     }
 

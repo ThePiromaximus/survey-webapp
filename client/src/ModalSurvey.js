@@ -1,5 +1,5 @@
 import { Modal, Button, Form, Row, Col, Alert } from "react-bootstrap";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, Fragment } from "react";
 import OpenQuestion from "./OpenQuestion";
 import './modalCss.css';
 import API from "./API";
@@ -79,11 +79,11 @@ function ModalSurvey(props) {
     function renderQuestions() {
         //questions = {max, min, optionId, optionText, questionId, questionText, type}
         let alreadyDid = [];
-        let questionList = props.questions.map((question) => {
+        let questionList = props.questions.map((question, index) => {
             if (question.type === 1 || question.type === 2) {
                 //Question type = 1 -> Open question, mandatory answer
                 //Question type = 2 -> Open question, not mandatory answer
-                return <OpenQuestion question={question} setAnswers={setAnswers} answers={answers}></OpenQuestion>;
+                return <OpenQuestion question={question} setAnswers={setAnswers} answers={answers} key={index}></OpenQuestion>;
             }
             else if (question.type === 0 && !alreadyDid.includes(question.id)) {
                 //Question type = 0 -> Multiple questions
@@ -92,10 +92,11 @@ function ModalSurvey(props) {
                 return (<ClosedQuestion options={newarray} question={question}
                     setError={setError} setWrongQuestion={setWrongQuestion}
                     setAnswers={setAnswers} answers={answers}
+                    key={index}
                 >
                 </ClosedQuestion>);
             } else {
-                return <></>;
+                return <React.Fragment key={index}></React.Fragment>;
             }
 
         });

@@ -36,10 +36,10 @@ function QuestionList(props) {
 
     function renderQuestions() {
         //questions = {text, type, options (if any), max (if any), min(if any)}
-        let questionList = props.questions.map((question) => {
+        let questionList = props.questions.map((question, index) => {
             if (question.type === 1) {
                 return (
-                    <Card className="mt-2">
+                    <Card className="mt-2" key={index}>
                         <Card.Body>
                             <Card.Title>
                                 {question.text}
@@ -71,7 +71,7 @@ function QuestionList(props) {
                     </Card>);
             } else if (question.type === 2) {
                 return (
-                    <Card className="mt-2">
+                    <Card className="mt-2" key={index}>
                         <Card.Body>
                             <Card.Title>
                                 {question.text}
@@ -98,7 +98,7 @@ function QuestionList(props) {
                     </Card>);
             } else if (question.type === 0) {
                 return (
-                    <Card className="mt-2">
+                    <Card className="mt-2" key={index}>
                         <Card.Body>
                             <Card.Title>
                                 {question.text}
@@ -109,7 +109,7 @@ function QuestionList(props) {
                             <hr />
                             <Row className="justify-content-between">
                                 <Col>
-                                    {question.options.map((option) => <h6>{option}</h6>)}
+                                    {question.options.map((option, indexO) => <h6 key={indexO}>{option}</h6>)}
                                 </Col>
                             </Row>
                             <Row>

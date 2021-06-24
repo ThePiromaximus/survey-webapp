@@ -22,6 +22,15 @@ function AdminDashboard(props) {
     //Contains the id of the current survey whose response I am seeing right now
     const [currentSurvey, setCurrentSurvey] = useState(0);
     const [submission, setSubmission] = useState([]);
+    /*
+        I use this state to keep track of update on the current user/survey that the admin is looking.
+        Obv I could easy use, as dependencies for the useEffect, both states currentUser and currentSurvey but in
+        that way every time I update one of the two states they trigger the useEffect with one value correct and
+        one not correct (not updated yet).
+
+        TLDR: is a dirty bit for the update of submission
+    */
+    const [updateSub, setUpdateSub] = useState(0);
 
     //UPDATE THE SURVEY THAT IM LOOKING
     useEffect(() => {
@@ -85,8 +94,11 @@ function AdminDashboard(props) {
             setSubmission(sub);
         }
 
-        updateSubmission(currentSurvey, currentUser.id)
-    }, [currentUser, currentSurvey]);
+        //I update the submission state only if the user clicked on a valid survey
+        //current survey = 0 only when the admin is in the admin dashboard and no survey is selected (for watching answers)
+        if(currentSurvey!==0)
+            updateSubmission(currentSurvey, currentUser.id)
+    }, [updateSub]);
 
     const handleOpenCreate = () => {
         setSeeResult(false);
@@ -139,12 +151,13 @@ function AdminDashboard(props) {
                         setUserHasSubmitted={setUserHasSubmitted} setCurrentUser={setCurrentUser}
                         setCurrentSurvey={setCurrentSurvey} userHasSubmitted={userHasSubmitted}
                         currentSurvey={currentSurvey} setSubmission={setSubmission}
+                        setUpdateSub={setUpdateSub}
                     >
                     </SurveysList>
                 </Col>
                 <Col sm={8}>
                     {seeResult ? <Results userHasSubmitted={userHasSubmitted} currentUser={currentUser} setCurrentUser={setCurrentUser}
-                        currentSurvey={currentSurvey} submission={submission} setSubmission={setSubmission}>
+                        currentSurvey={currentSurvey} submission={submission} setSubmission={setSubmission} setUpdateSub={setUpdateSub}>
                     </Results> : <></>}
                     {createSurvey ?
                         <Container>

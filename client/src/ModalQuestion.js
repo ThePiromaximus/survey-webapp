@@ -119,7 +119,7 @@ function ModalQuestion(props) {
                                 Write the answers for your closed question
                                 <Form.Text>You can insert a maximum of 10 answers and a minimum of 1</Form.Text>
                             </Form.Label>
-                            {options.map((option) => (<h6>{option}</h6>))}
+                            {options.map((option, index) => (<h6 key={index}>{option}</h6>))}
                             <Row>
                                 <Col>
                                     <Button className="mr-1" variant="success" onClick={() => setShowOptionModal(true)}>

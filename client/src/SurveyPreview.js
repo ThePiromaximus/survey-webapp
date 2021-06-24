@@ -22,15 +22,17 @@ function SurveyPreview(props) {
     //I use this function in admin side to see the answers that users gave to a certain survey
     const handleSeeResult = async (surveyId) => {
         //I get the list of all users who submitted the selected survey
-        const users = await API.getUsersHasSubmitted(props.id);
-        await props.setUserHasSubmitted(users);
-        await props.setCurrentUser(users[0]);
-        await props.setCurrentSurvey(surveyId);
+        const users = await API.getUsersHasSubmitted(surveyId);
+        props.setUserHasSubmitted(users);
+        props.setCurrentUser(users[0]);
+        props.setCurrentSurvey(surveyId);
         const submission = await API.getSubmission(surveyId, users[0].id);
-        await props.setSubmission(submission)
-        await props.setCreateSurvey(false);
-        await props.setSeeResult(true);
+        props.setSubmission(submission)
+        props.setCreateSurvey(false);
+        props.setSeeResult(true);
+        await props.setUpdateSub((old) => (old + 1));
     }
+    
     
 
     if (!props.admin) {
