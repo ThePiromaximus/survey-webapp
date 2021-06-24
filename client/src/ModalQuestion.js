@@ -101,6 +101,7 @@ function ModalQuestion(props) {
         });
         setTempOption("");
         setShowOptionModal(false);
+        props.setShow(true);
     }
 
     if (props.modalType === "closed") {
@@ -122,16 +123,19 @@ function ModalQuestion(props) {
                             {options.map((option, index) => (<h6 key={index}>{option}</h6>))}
                             <Row>
                                 <Col>
-                                    <Button className="mr-1" variant="success" onClick={() => setShowOptionModal(true)}>
+                                    <Button className="mr-1" variant="success" onClick={() => {
+                                            setShowOptionModal(true);
+                                            props.setShow(false);
+                                        }}>
                                         Add answer
                                     </Button>
                                 </Col>
                             </Row>
                             <hr />
                             <Form.Label>Select max. number of selectable  answers for this question</Form.Label>
-                            <Form.Control type="number" defaultValue="0" max={options.length} min={min} onChange={(event) => setMax(event.target.value)}></Form.Control>
+                            <Form.Control type="number" defaultValue="0" max={options.length} min={min} onClick={(event) => setMax(+event.target.value)}></Form.Control>
                             <Form.Label>Select min. number of selectable answers for this question</Form.Label>
-                            <Form.Control type="number" defaultValue="0" max={max} min="0" onChange={(event) => setMin(event.target.value)}></Form.Control>
+                            <Form.Control type="number" defaultValue="0" max={max} min="0" onClick={(event) => setMin(+event.target.value)}></Form.Control>
                             <Form.Text>Notice that you cannot modify max and min attributes if you dont create at least one answer. Also, you cannot choose a max number of answers greater than the number of options or smaller than the min attribute </Form.Text>
                         </Modal.Body>
                         <Modal.Footer>
@@ -165,6 +169,7 @@ function ModalQuestion(props) {
                                 <Button variant="secondary" onClick={() => {
                                     setTempOption("");
                                     setShowOptionModal(false);
+                                    props.setShow(true);
                                 }}>
                                     Close
                                 </Button>
