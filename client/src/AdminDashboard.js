@@ -62,6 +62,8 @@ function AdminDashboard(props) {
                         let selectedOptions = questions.map((q) => {
                             if(selectedId.includes(q.optionId)){
                                 return q.optionText;
+                            }else{
+                                return -1;
                             }
                         });
                         return ({

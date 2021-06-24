@@ -52,8 +52,6 @@ function App() {
       if (adminTemp){
         setAdmin(adminTemp);
       }
-    
-      console.log(adminTemp);
     }
     
     getSession();

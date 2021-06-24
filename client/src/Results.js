@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
 import { Container, Button, Row, Col, Form } from "react-bootstrap";
-import API from "./API";
 
 function Results(props){
 
