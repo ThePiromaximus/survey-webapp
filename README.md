@@ -84,7 +84,7 @@
       - type: tipo della domanda. Può essere 0, 1 o 2. 0 corrisponde a domanda a risposta multipla, 1 a risposta aperta obbligatoria, 2 a risposta aperta non obbligatoria.
       - options: array che contiene le opzioni (risposte) della domanda, valido SOLO nel caso in cui la domanda inserita fosse di tipo 0 (risposta multipla). Viceversa contiene *null*.
       - max: massimo numero di risposte che un utente può selezionare (valido solo per domande di tipo 0, ovvero a risposta multipla). Viceversa contiene *null*.
-      - min: min: minimo numero di risposte che un utente deve selezionare (valido solo per domande di tipo 0, ovvero a risposta multipla). Viceversa contiene *null*.
+      - min: minimo numero di risposte che un utente deve selezionare (valido solo per domande di tipo 0, ovvero a risposta multipla). Viceversa contiene *null*.
   - response body content
     - Nulla.
 - GET `/api/survey=:survey/users`: serve a ottenere una lista di utenti che hanno compilato un certo questionario, dato il suo id.
