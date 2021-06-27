@@ -123,12 +123,14 @@ function ModalQuestion(props) {
                             {options.map((option, index) => (<h6 key={index}>{option}</h6>))}
                             <Row>
                                 <Col>
-                                    <Button className="mr-1" variant="success" onClick={() => {
+                                 {options.length<10 ? <Button className="mr-1" variant="success" onClick={() => {
                                             setShowOptionModal(true);
                                             props.setShow(false);
                                         }}>
                                         Add answer
-                                    </Button>
+                                    </Button> : <Button className="mr-1" variant="success" disabled>
+                                        Add answer
+                                    </Button>}
                                 </Col>
                             </Row>
                             <hr />
