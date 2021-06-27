@@ -49,14 +49,18 @@ function ClosedQuestion(props) {
     }
 
     //Needed to validate checkboxes
-    //When checkedBoxes, min, max or props (options in particular) change, then I check if the user has selected the correct amount of options
+    //When checkedBoxes changes, then I check if the user has selected the correct amount of options
     useEffect(()=>{
         if(checkedBoxes<min || checkedBoxes>max){
-            props.setWrongQuestion(props.question.questionId);
+            //Add to the list of wrong questions the new wrong question
+            props.setWrongQuestion((prevQuestions) => [...prevQuestions, props.question.questionId]);
          }else{
-             props.setWrongQuestion(0);
+             props.setWrongQuestion(() => {
+                 //Remove from the list of wrong questions the question that now is correct
+                 return props.wrongQuestion.filter((q)=>(q!==props.question.questionId));
+             });
          }
-    }, [checkedBoxes, min, max, props])
+    }, [checkedBoxes]);
 
 
     return (<>

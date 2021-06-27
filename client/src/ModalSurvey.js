@@ -10,7 +10,7 @@ function ModalSurvey(props) {
     //name of the user who submits the survey
     const [name, setName] = useState("");
     const [error, setError] = useState("");
-    const [wrongQuestion, setWrongQuestion] = useState(0);
+    const [wrongQuestion, setWrongQuestion] = useState([]);
     //answer = {answerText (if any), questionId, optionId (if any), userId}
     const [answers, setAnswers] = useState([]);
 
@@ -18,7 +18,7 @@ function ModalSurvey(props) {
     const handleClose = () => {
         setError("");
         setName("");
-        setWrongQuestion(0);
+        setWrongQuestion([]);
         setAnswers([]);
         props.setShow(false)
     };
@@ -26,7 +26,6 @@ function ModalSurvey(props) {
     useEffect(() => {
         setError("");
         setName("");
-        setWrongQuestion(0);
         setAnswers([]);
     }, [props.show]);
 
@@ -36,10 +35,10 @@ function ModalSurvey(props) {
         let re = "^\\s+$";
         if (name === '' || name.match(re)) {
             setError("You have to insert your name before submit the survey!");
-        } else if (wrongQuestion !== 0) {
+        } else if (wrongQuestion.length!==0) {
             let wq = '';
             props.questions.forEach(element => {
-                if (element.questionId === wrongQuestion)
+                if (element.questionId === wrongQuestion[0])
                     wq = element.questionText;
             });
             setError("It looks like you selected the wrong number of answers in the question: " + wq);
@@ -85,14 +84,14 @@ function ModalSurvey(props) {
                 //Question type = 2 -> Open question, not mandatory answer
                 return <OpenQuestion question={question} setAnswers={setAnswers} answers={answers} key={index}></OpenQuestion>;
             }
-            else if (question.type === 0 && !alreadyDid.includes(question.id)) {
+            else if (question.type === 0 && !alreadyDid.includes(question.questionId)) {
                 //Question type = 0 -> Multiple questions
-                alreadyDid.push(question.id);
+                alreadyDid.push(question.questionId);
                 let newarray = props.questions.map((e) => (e)).filter(e => e.questionId === question.questionId);
                 return (<ClosedQuestion options={newarray} question={question}
-                    setError={setError} setWrongQuestion={setWrongQuestion}
+                    setError={setError} setWrongQuestion={setWrongQuestion} wrongQuestion={wrongQuestion}
                     setAnswers={setAnswers} answers={answers}
-                    key={index}
+                    key={index} 
                 >
                 </ClosedQuestion>);
             } else {
